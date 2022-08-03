@@ -4,4 +4,5 @@
 vendor
 composer.lock
 docker/.env
+!docker/.env.dist
 build
