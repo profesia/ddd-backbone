@@ -1,5 +1,7 @@
 .*
 !.gitignore
+!.github
 vendor
 composer.lock
 docker/.env
+build
