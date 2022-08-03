@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Profesia\DddBackbone\Domain\Event;
+namespace Profesia\DddBackbone\Application\Event;
 
 interface DequeueEventInterface
 {

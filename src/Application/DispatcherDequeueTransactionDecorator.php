@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application;
 
-use Profesia\DddBackbone\Domain\Event\DequeueEventInterface;
+use Profesia\DddBackbone\Application\Event\DequeueEventInterface;
 use Profesia\DddBackbone\Domain\Exception\DomainException;
 
 class DispatcherDequeueTransactionDecorator implements TransactionServiceInterface
