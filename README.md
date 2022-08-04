@@ -1,5 +1,5 @@
 # Domain-driven Design Backbone
-Set of classes helping to lay foundation for a DDD application
+Set of classes helping to lay the foundation for a DDD application
 
 [![Build and test](https://github.com/profesia/ddd-backbone/actions/workflows/test-runner.yml/badge.svg?branch=master)](https://github.com/profesia/psr-middlewares/actions/workflows/test-runner.yml)
 

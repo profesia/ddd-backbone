@@ -2,7 +2,7 @@
   "name": "profesia/ddd-backbone",
   "type": "library",
   "license": "MIT",
-  "description": "Set of classes helping to lay foundation for a DDD application",
+  "description": "Set of classes helping to lay the foundation for a DDD application",
   "authors": [
     {
       "name": "Matej Bádal",
