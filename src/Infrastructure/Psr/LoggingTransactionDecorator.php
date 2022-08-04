@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-use Profesia\DddBackbone\Application\Log\Context;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
 use Profesia\DddBackbone\Domain\Exception\DomainException;
 use Profesia\DddBackbone\Infrastructure\Utils\Backtrace\FormatsBacktrace;
 use Psr\Log\LoggerInterface;
 
-
 class LoggingTransactionDecorator implements TransactionServiceInterface
 {
     use FormatsBacktrace;
+
+    private const MESSAGE_TYPE = 'message_type';
+    private const EXCEPTION    = 'exception';
 
     private TransactionServiceInterface $transactionService;
     private LoggerInterface $logger;
@@ -45,8 +46,8 @@ class LoggingTransactionDecorator implements TransactionServiceInterface
             $this->logger->error(
                 'Application transaction logger.',
                 [
-                    Context::MESSAGE_TYPE => self::class,
-                    Context::EXCEPTION    => $e,
+                    self::MESSAGE_TYPE => self::class,
+                    self::EXCEPTION    => $e,
                     'stackTrace'          => static::formatBacktrace($e->getTrace()),
                 ]
             );
