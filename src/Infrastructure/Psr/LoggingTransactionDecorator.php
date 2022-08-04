@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace Profesia\DddBackbone\Infrastructure\Psr;
+
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
 use Profesia\DddBackbone\Domain\Exception\DomainException;
 use Profesia\DddBackbone\Infrastructure\Utils\Backtrace\FormatsBacktrace;
@@ -41,7 +43,7 @@ class LoggingTransactionDecorator implements TransactionServiceInterface
     public function transactional(callable $func): mixed
     {
         try {
-            return $this->transactionService->transactional($func);
+             return $this->transactionService->transactional($func);
         } catch (DomainException $e) {
             $this->logger->error(
                 'Application transaction logger.',
