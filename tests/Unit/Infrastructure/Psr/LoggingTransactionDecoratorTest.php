@@ -7,7 +7,7 @@ namespace Profesia\DddBackbone\Test\Unit\Infrastructure\Psr;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
-use Profesia\DddBackbone\Application\DispatcherDequeueTransactionDecorator;
+use Profesia\DddBackbone\Application\EventFlushingTransactionDecorator;
 use Profesia\DddBackbone\Application\Event\DequeueEventInterface;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
 use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
