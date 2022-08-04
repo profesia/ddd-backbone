@@ -2,7 +2,7 @@
   "name": "profesia/ddd-backbone",
   "type": "library",
   "license": "MIT",
-  "description": "Profesia Domain-driven Design Backbone",
+  "description": "Set of classes helping to lay foundation for a DDD application",
   "authors": [
     {
       "name": "Matej Bádal",
