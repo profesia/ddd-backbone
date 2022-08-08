@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Infrastructure\Psr;
 
+use Profesia\DddBackbone\Application\Log\Context;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
 use Profesia\DddBackbone\Domain\Exception\DomainException;
 use Profesia\DddBackbone\Infrastructure\Utils\Backtrace\FormatsBacktrace;
@@ -13,16 +14,12 @@ class LoggingTransactionDecorator implements TransactionServiceInterface
 {
     use FormatsBacktrace;
 
-    private const MESSAGE_TYPE = 'message_type';
-    private const EXCEPTION    = 'exception';
-
-    private TransactionServiceInterface $transactionService;
-    private LoggerInterface $logger;
-
-    public function __construct(TransactionServiceInterface $transactionService, LoggerInterface $logger)
+    public function __construct(
+        private TransactionServiceInterface $transactionService,
+        private LoggerInterface $logger,
+        private string $errorMessage
+    )
     {
-        $this->transactionService = $transactionService;
-        $this->logger             = $logger;
     }
 
     public function start(): void
@@ -46,10 +43,10 @@ class LoggingTransactionDecorator implements TransactionServiceInterface
              return $this->transactionService->transactional($func);
         } catch (DomainException $e) {
             $this->logger->error(
-                'Application transaction logger.',
+                $this->errorMessage,
                 [
-                    self::MESSAGE_TYPE => self::class,
-                    self::EXCEPTION    => $e,
+                    Context::MESSAGE_TYPE => self::class,
+                    Context::EXCEPTION    => $e,
                     'stackTrace'          => static::formatBacktrace($e->getTrace()),
                 ]
             );

@@ -32,7 +32,8 @@ class LoggingTransactionDecoratorTest extends MockeryTestCase
 
         $decorator = new LoggingTransactionDecorator(
             $decoratedObject,
-            $logger
+            $logger,
+            'Test logger message.'
         );
 
         $decorator->start();
@@ -51,7 +52,8 @@ class LoggingTransactionDecoratorTest extends MockeryTestCase
 
         $decorator = new LoggingTransactionDecorator(
             $decoratedObject,
-            $logger
+            $logger,
+            'Test logger message.'
         );
 
         $decorator->commit();
@@ -70,7 +72,8 @@ class LoggingTransactionDecoratorTest extends MockeryTestCase
 
         $decorator = new LoggingTransactionDecorator(
             $decoratedObject,
-            $logger
+            $logger,
+            'Test logger message.'
         );
 
         $decorator->rollback();
@@ -87,7 +90,8 @@ class LoggingTransactionDecoratorTest extends MockeryTestCase
 
         $decorator = new LoggingTransactionDecorator(
             $decoratedObject,
-            $logger
+            $logger,
+            'Test logger message.'
         );
 
         $callback = function () {
@@ -112,6 +116,8 @@ class LoggingTransactionDecoratorTest extends MockeryTestCase
 
     public function testCanHandleExceptionDuringTransaction(): void
     {
+        $loggerMessage = 'Test logger message.';
+
         /** @var MockInterface|TransactionServiceInterface $decoratedObject */
         $decoratedObject = Mockery::mock(TransactionServiceInterface::class);
 
@@ -120,7 +126,8 @@ class LoggingTransactionDecoratorTest extends MockeryTestCase
 
         $decorator = new LoggingTransactionDecorator(
             $decoratedObject,
-            $logger
+            $logger,
+            $loggerMessage
         );
 
         $exception = new InvalidArgumentException('Test message');
@@ -144,7 +151,7 @@ class LoggingTransactionDecoratorTest extends MockeryTestCase
             ->once()
             ->withArgs(
                 [
-                    'Application transaction logger.',
+                    $loggerMessage,
                     [
                         'message_type' => LoggingTransactionDecorator::class,
                         'exception'    => $exception,

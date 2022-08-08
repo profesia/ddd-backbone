@@ -27,7 +27,8 @@ class TransactionServiceTest extends TestCase
 
         $loggingDecorator = new LoggingTransactionDecorator(
             $eventFlushingDecorator,
-            new NullLogger()
+            new NullLogger(),
+            'Test error message.'
         );
 
         $okCallback = function () {
