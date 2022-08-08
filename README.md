@@ -2,6 +2,8 @@
 Set of classes helping to lay the foundation for a DDD application
 
 [![Build and test](https://github.com/profesia/ddd-backbone/actions/workflows/test-runner.yml/badge.svg?branch=master)](https://github.com/profesia/psr-middlewares/actions/workflows/test-runner.yml)
+![PHP Version](https://img.shields.io/packagist/php-v/profesia/ddd-backbone)
+![License](https://img.shields.io/packagist/l/profesia/ddd-backbone)
 
 ## Installation
 Install the latest version by running the command
