@@ -8,15 +8,15 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Profesia\DddBackbone\Application\Event\QueuedDispatcherDecorator;
 use Mockery\MockInterface;
 use Mockery;
-use Profesia\DddBackbone\Domain\Event\EventDispatcherInterface;
+use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 use Profesia\DddBackbone\Test\Integration\Domain\Event\TestEvent;
 
 class QueuedDispatcherDecoratorTest extends MockeryTestCase
 {
     public function testCanQueueEvents(): void
     {
-        /** @var MockInterface|EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        /** @var MockInterface|DispatcherInterface $eventDispatcher */
+        $eventDispatcher = Mockery::mock(DispatcherInterface::class);
         $eventDispatcher->shouldNotHaveBeenCalled();
 
         $decorator = new QueuedDispatcherDecorator(
@@ -30,8 +30,8 @@ class QueuedDispatcherDecoratorTest extends MockeryTestCase
 
     public function testCanFlush(): void
     {
-        /** @var MockInterface|EventDispatcherInterface $eventDispatcher */
-        $eventDispatcher = Mockery::mock(EventDispatcherInterface::class);
+        /** @var MockInterface|DispatcherInterface $eventDispatcher */
+        $eventDispatcher = Mockery::mock(DispatcherInterface::class);
 
         $decorator = new QueuedDispatcherDecorator(
             $eventDispatcher

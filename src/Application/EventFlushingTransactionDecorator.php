@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application;
 
-use Profesia\DddBackbone\Application\Event\DequeueEventInterface;
+use Profesia\DddBackbone\Application\Event\DequeueDispatcherInterface;
 use Profesia\DddBackbone\Domain\Exception\DomainException;
 
 class EventFlushingTransactionDecorator implements TransactionServiceInterface
 {
     public function __construct(
         private TransactionServiceInterface $decoratedObject,
-        private DequeueEventInterface $dequeueTrigger
+        private DequeueDispatcherInterface $dequeueTrigger
     ) {
     }
 

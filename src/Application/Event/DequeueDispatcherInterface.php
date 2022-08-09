@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Event;
 
-interface DequeueEventInterface
+interface DequeueDispatcherInterface
 {
     public function flush(): void;
 }

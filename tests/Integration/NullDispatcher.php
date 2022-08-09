@@ -7,9 +7,9 @@ namespace Profesia\DddBackbone\Test\Integration;
 
 
 use Profesia\DddBackbone\Domain\Event\DomainEvent;
-use Profesia\DddBackbone\Domain\Event\EventDispatcherInterface;
+use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 
-class NullEventDispatcher implements EventDispatcherInterface
+class NullDispatcher implements DispatcherInterface
 {
     public function dispatch(DomainEvent $event): void
     {

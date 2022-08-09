@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Profesia\DddBackbone\Application\Event;
 
 use Profesia\DddBackbone\Domain\Event\DomainEvent;
-use Profesia\DddBackbone\Domain\Event\EventDispatcherInterface;
+use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 
-class QueuedDispatcherDecorator implements EventDispatcherInterface, DequeueEventInterface
+class QueuedDispatcherDecorator implements DispatcherInterface, DequeueDispatcherInterface
 {
     /** @var DomainEvent[] */
     private array $queuedEvents = [];
 
     public function __construct(
-        private EventDispatcherInterface $decoratedObject
+        private DispatcherInterface $decoratedObject
     ) {
     }
 

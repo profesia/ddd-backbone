@@ -8,7 +8,7 @@ use Mockery;
 use Mockery\MockInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Profesia\DddBackbone\Application\EventFlushingTransactionDecorator;
-use Profesia\DddBackbone\Application\Event\DequeueEventInterface;
+use Profesia\DddBackbone\Application\Event\DequeueDispatcherInterface;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
 use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
 
@@ -22,8 +22,8 @@ class EventFlushingTransactionDecoratorTest extends MockeryTestCase
             ->shouldReceive('start')
             ->once();
 
-        /** @var MockInterface|DequeueEventInterface $dequeueTrigger */
-        $dequeueTrigger = Mockery::mock(DequeueEventInterface::class);
+        /** @var MockInterface|DequeueDispatcherInterface $dequeueTrigger */
+        $dequeueTrigger = Mockery::mock(DequeueDispatcherInterface::class);
 
         $decorator = new EventFlushingTransactionDecorator(
             $decoratedObject,
@@ -41,8 +41,8 @@ class EventFlushingTransactionDecoratorTest extends MockeryTestCase
             ->shouldReceive('commit')
             ->once();
 
-        /** @var MockInterface|DequeueEventInterface $dequeueTrigger */
-        $dequeueTrigger = Mockery::mock(DequeueEventInterface::class);
+        /** @var MockInterface|DequeueDispatcherInterface $dequeueTrigger */
+        $dequeueTrigger = Mockery::mock(DequeueDispatcherInterface::class);
 
         $decorator = new EventFlushingTransactionDecorator(
             $decoratedObject,
@@ -60,8 +60,8 @@ class EventFlushingTransactionDecoratorTest extends MockeryTestCase
             ->shouldReceive('rollback')
             ->once();
 
-        /** @var MockInterface|DequeueEventInterface $dequeueTrigger */
-        $dequeueTrigger = Mockery::mock(DequeueEventInterface::class);
+        /** @var MockInterface|DequeueDispatcherInterface $dequeueTrigger */
+        $dequeueTrigger = Mockery::mock(DequeueDispatcherInterface::class);
 
         $decorator = new EventFlushingTransactionDecorator(
             $decoratedObject,
@@ -76,8 +76,8 @@ class EventFlushingTransactionDecoratorTest extends MockeryTestCase
         /** @var MockInterface|TransactionServiceInterface $decoratedObject */
         $decoratedObject = Mockery::mock(TransactionServiceInterface::class);
 
-        /** @var MockInterface|DequeueEventInterface $dequeueTrigger */
-        $dequeueTrigger = Mockery::mock(DequeueEventInterface::class);
+        /** @var MockInterface|DequeueDispatcherInterface $dequeueTrigger */
+        $dequeueTrigger = Mockery::mock(DequeueDispatcherInterface::class);
         $dequeueTrigger
             ->shouldReceive('flush')
             ->once();
@@ -112,8 +112,8 @@ class EventFlushingTransactionDecoratorTest extends MockeryTestCase
         /** @var MockInterface|TransactionServiceInterface $decoratedObject */
         $decoratedObject = Mockery::mock(TransactionServiceInterface::class);
 
-        /** @var MockInterface|DequeueEventInterface $dequeueTrigger */
-        $dequeueTrigger = Mockery::mock(DequeueEventInterface::class);
+        /** @var MockInterface|DequeueDispatcherInterface $dequeueTrigger */
+        $dequeueTrigger = Mockery::mock(DequeueDispatcherInterface::class);
         $dequeueTrigger
             ->shouldNotHaveBeenCalled();
 
