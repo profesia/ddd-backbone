@@ -6,7 +6,7 @@ namespace Profesia\DddBackbone\Domain\Event;
 
 use DateTimeImmutable;
 
-abstract class DomainEvent
+abstract class AbstractDomainEvent
 {
 
     public function __construct(

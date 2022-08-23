@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Domain\Exception;
 
-class InvalidArgumentException extends DomainException
+final class InvalidArgumentException extends DomainException
 {
     public function __construct(string $message)
     {

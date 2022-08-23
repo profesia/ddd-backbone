@@ -6,5 +6,5 @@ namespace Profesia\DddBackbone\Domain\Event;
 
 interface DispatcherInterface
 {
-    public function dispatch(DomainEvent $event): void;
+    public function dispatch(AbstractDomainEvent $event): void;
 }

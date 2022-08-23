@@ -10,7 +10,7 @@ use Profesia\DddBackbone\Domain\Exception\DomainException;
 use Profesia\DddBackbone\Infrastructure\Utils\Backtrace\FormatsBacktrace;
 use Psr\Log\LoggerInterface;
 
-class LoggingTransactionDecorator implements TransactionServiceInterface
+final class LoggingTransactionDecorator implements TransactionServiceInterface
 {
     use FormatsBacktrace;
 
@@ -47,7 +47,7 @@ class LoggingTransactionDecorator implements TransactionServiceInterface
                 [
                     Context::MESSAGE_TYPE => self::class,
                     Context::EXCEPTION    => $e,
-                    'stackTrace'          => static::formatBacktrace($e->getTrace()),
+                    'stackTrace'          => self::formatBacktrace($e->getTrace()),
                 ]
             );
 

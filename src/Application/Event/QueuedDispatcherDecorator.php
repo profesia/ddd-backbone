@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Event;
 
-use Profesia\DddBackbone\Domain\Event\DomainEvent;
+use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
 use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 
-class QueuedDispatcherDecorator implements DispatcherInterface, DequeueDispatcherInterface
+final class QueuedDispatcherDecorator implements DispatcherInterface, DequeueDispatcherInterface
 {
-    /** @var DomainEvent[] */
+    /** @var AbstractDomainEvent[] */
     private array $queuedEvents = [];
 
     public function __construct(
@@ -17,7 +17,7 @@ class QueuedDispatcherDecorator implements DispatcherInterface, DequeueDispatche
     ) {
     }
 
-    public function dispatch(DomainEvent $event): void
+    public function dispatch(AbstractDomainEvent $event): void
     {
         $this->queuedEvents[] = $event;
     }

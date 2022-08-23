@@ -7,7 +7,7 @@ namespace Profesia\DddBackbone\Application;
 use Profesia\DddBackbone\Application\Event\DequeueDispatcherInterface;
 use Profesia\DddBackbone\Domain\Exception\DomainException;
 
-class EventFlushingTransactionDecorator implements TransactionServiceInterface
+final class EventFlushingTransactionDecorator implements TransactionServiceInterface
 {
     public function __construct(
         private TransactionServiceInterface $decoratedObject,

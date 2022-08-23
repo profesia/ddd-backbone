@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Test\Integration\Domain\Event;
 
-use Profesia\DddBackbone\Domain\Event\DomainEvent;
+use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
 use DateTimeImmutable;
 
-class TestEvent extends DomainEvent
+class TestEvent extends AbstractDomainEvent
 {
     public function __construct(
         private int $data,
