@@ -22,5 +22,7 @@ abstract class AbstractDomainEvent
     {
         return $this->occurredOn;
     }
+
+    public abstract function getPayload(): array;
 }
 
