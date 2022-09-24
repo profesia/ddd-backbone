@@ -10,12 +10,18 @@ abstract class AbstractDomainEvent
 {
 
     public function __construct(
+        private string $primaryId,
         private ?DateTimeImmutable $occurredOn = null
     )
     {
         if ($this->occurredOn === null) {
             $this->occurredOn = new DateTimeImmutable();
         }
+    }
+
+    public function getPrimaryId(): string
+    {
+        return $this->primaryId;
     }
 
     public function getOccurredOn(): DateTimeImmutable
