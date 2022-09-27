@@ -6,7 +6,7 @@ namespace Profesia\DddBackbone\Application\Event;
 
 use Profesia\DddBackbone\Application\Event\Exception\BadEventMetadataConfigurationExceptionAbstract;
 
-class EventMetadata
+final class EventMetadata
 {
     private function __construct(
         private string $resource,

@@ -6,7 +6,7 @@ namespace Profesia\DddBackbone\Application\Event;
 
 use Profesia\DddBackbone\Application\Event\Exception\MissingEventMetadataException;
 
-class MetadataRegistry
+final class MetadataRegistry
 {
     /** @var array<string, EventMetadata>  */
     private array $config;

@@ -7,12 +7,11 @@ namespace Profesia\DddBackbone\Infrastructure\PubSub\Event;
 use Profesia\DddBackbone\Application\Event\DequeueDispatcherInterface;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
-use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
 
-final class QueuedEventDispatcher implements DispatcherInterface, DequeueDispatcherInterface
+final class QueuedEventDispatcher implements DequeueDispatcherInterface
 {
     /** @var AbstractDomainEvent[] */
     private array $events;

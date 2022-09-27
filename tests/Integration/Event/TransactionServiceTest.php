@@ -6,9 +6,8 @@ namespace Profesia\DddBackbone\Test\Integration\Event;
 
 use PHPUnit\Framework\TestCase;
 use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
-use Profesia\DddBackbone\Test\Integration\NullDispatcher;
+use Profesia\DddBackbone\Test\Integration\NullDequeueDispatcher;
 use Profesia\DddBackbone\Test\Integration\NullTransactionService;
-use Profesia\DddBackbone\Application\Event\QueuedDispatcherDecorator;
 use Profesia\DddBackbone\Application\EventFlushingTransactionDecorator;
 use Profesia\DddBackbone\Infrastructure\Psr\LoggingTransactionDecorator;
 use Psr\Log\NullLogger;
@@ -20,9 +19,7 @@ class TransactionServiceTest extends TestCase
         $nullService            = new NullTransactionService();
         $eventFlushingDecorator = new EventFlushingTransactionDecorator(
             $nullService,
-            new QueuedDispatcherDecorator(
-                new NullDispatcher()
-            )
+            new NullDequeueDispatcher()
         );
 
         $loggingDecorator = new LoggingTransactionDecorator(
