@@ -5,16 +5,16 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Test\Unit\Application\Event;
 
-use Mockery\MockInterface;
+use DateTimeImmutable;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery\MockInterface;
 use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\NullEvent;
+use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
-use DateTimeImmutable;
-use Profesia\MessagingCore\Broking\Dto\Message;
 
 class QueuedEventDispatcherTest extends MockeryTestCase
 {
