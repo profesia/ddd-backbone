@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Profesia\DddBackbone\Infrastructure\PubSub\Event;
+namespace Profesia\DddBackbone\Application\Event;
 
-use Profesia\DddBackbone\Application\Event\DequeueDispatcherInterface;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
 use Profesia\MessagingCore\Broking\Dto\Message;
