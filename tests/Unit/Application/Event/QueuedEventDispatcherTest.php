@@ -12,6 +12,7 @@ use Mockery\MockInterface;
 use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\NullEvent;
+use Profesia\MessagingCore\Broking\Dto\BrokingBatchResponse;
 use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
@@ -104,11 +105,17 @@ class QueuedEventDispatcherTest extends MockeryTestCase
             $messages[] = $message;
         }
 
+        $batchResponse = BrokingBatchResponse::createForMessagesWithBatchStatus(
+            true,
+            null,
+            ...$messages
+        );
+
         $messageBroker
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($messages)  {
+                function (MessageCollection $collection) use ($messages) {
                     foreach ($collection as $key => $collectionMessage) {
                         if ($collectionMessage->toArray() !== $messages[$key]->toArray()) {
                             return false;
@@ -117,6 +124,8 @@ class QueuedEventDispatcherTest extends MockeryTestCase
 
                     return true;
                 }
+            )->andReturn(
+                $batchResponse
             );
 
         $dispatcher->flush();
