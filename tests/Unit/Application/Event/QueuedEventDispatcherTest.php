@@ -12,6 +12,9 @@ use Mockery\MockInterface;
 use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\NullEvent;
+use Profesia\MessagingCore\Broking\Dto\BrokingBatchResponse;
+use Profesia\MessagingCore\Broking\Dto\BrokingStatus;
+use Profesia\MessagingCore\Broking\Dto\DispatchedMessage;
 use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
@@ -66,8 +69,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
             $correlationId
         );
 
-        $objectIdBase = 'object-id';
-        $messages     = [];
+        $objectIdBase       = 'object-id';
+        $messages           = [];
+        $dispatchedMessages = [];
         for ($i = 1; $i <= 5; $i++) {
             $dateTime = new DateTimeImmutable();
             $objectId = "{$objectIdBase}-{$i}";
@@ -75,6 +79,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 $objectId,
                 $dateTime
             );
+
             $dispatcher->dispatch(
                 $event
             );
@@ -101,14 +106,21 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                     $message
                 );
 
-            $messages[] = $message;
+            $messages[]           = $message;
+            $dispatchedMessages[] = new DispatchedMessage(
+                $message,
+                new BrokingStatus(true)
+            );
         }
 
+        $brokingBatchResponse = BrokingBatchResponse::createForMessagesWithIndividualStatus(
+            ...$dispatchedMessages
+        );
         $messageBroker
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($messages)  {
+                function (MessageCollection $collection) use ($messages) {
                     foreach ($collection as $key => $collectionMessage) {
                         if ($collectionMessage->toArray() !== $messages[$key]->toArray()) {
                             return false;
@@ -117,6 +129,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
 
                     return true;
                 }
+            )
+            ->andReturn(
+                $brokingBatchResponse
             );
 
         $dispatcher->flush();
