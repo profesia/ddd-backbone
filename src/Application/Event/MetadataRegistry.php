@@ -11,13 +11,20 @@ final class MetadataRegistry
     /** @var array<string, EventMetadata>  */
     private array $config;
 
-    public static function createFromArrayConfig(array $config): self
+    public static function createFromArrayConfig(array $events, string $provider, string $target): self
     {
         $instance = new self();
-        foreach ($config as $eventName => $eventConfig) {
+        foreach ($events as $eventName => $eventConfig) {
+            $configToUse = [
+                'resource' => $eventConfig['resource'],
+                'provider' => $provider
+            ];
+
+            $configToUse['target'] = $eventConfig['targetOverride'] ?? $target;
+
             $instance->registerEventMetadata(
                 $eventName,
-                EventMetadata::createFromArray($eventConfig)
+                EventMetadata::createFromArray($configToUse)
             );
         }
 

@@ -13,6 +13,8 @@ use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\NullEvent;
 use Profesia\MessagingCore\Broking\Dto\BrokingBatchResponse;
+use Profesia\MessagingCore\Broking\Dto\BrokingStatus;
+use Profesia\MessagingCore\Broking\Dto\DispatchedMessage;
 use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
@@ -67,8 +69,8 @@ class QueuedEventDispatcherTest extends MockeryTestCase
             $correlationId
         );
 
-        $objectIdBase = 'object-id';
-        $messages     = [];
+        $objectIdBase       = 'object-id';
+        $messages           = [];
         for ($i = 1; $i <= 5; $i++) {
             $dateTime = new DateTimeImmutable();
             $objectId = "{$objectIdBase}-{$i}";
@@ -76,6 +78,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 $objectId,
                 $dateTime
             );
+
             $dispatcher->dispatch(
                 $event
             );
@@ -102,7 +105,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                     $message
                 );
 
-            $messages[] = $message;
+            $messages[]           = $message;
         }
 
         $batchResponse = BrokingBatchResponse::createForMessagesWithBatchStatus(
