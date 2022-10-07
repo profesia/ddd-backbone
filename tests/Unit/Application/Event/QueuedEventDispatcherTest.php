@@ -13,8 +13,6 @@ use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\NullEvent;
 use Profesia\MessagingCore\Broking\Dto\BrokingBatchResponse;
-use Profesia\MessagingCore\Broking\Dto\BrokingStatus;
-use Profesia\MessagingCore\Broking\Dto\DispatchedMessage;
 use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
