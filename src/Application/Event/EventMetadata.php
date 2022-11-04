@@ -18,16 +18,16 @@ final class EventMetadata
 
     public static function createFromArray(array $config): self
     {
-        if (array_key_exists('resource', $config) === false) {
-            throw new BadEventMetadataConfigurationExceptionAbstract('Key: [resource] is missing in the supplied config');
-        }
+        $requiredKeys = [
+            'resource',
+            'provider',
+            'target'
+        ];
 
-        if (array_key_exists('provider', $config) === false) {
-            throw new BadEventMetadataConfigurationExceptionAbstract('Key: [provider] is missing in the supplied config');
-        }
-
-        if (array_key_exists('target', $config) === false) {
-            throw new BadEventMetadataConfigurationExceptionAbstract('Key: [target] is missing in the supplied config');
+        foreach ($requiredKeys as $keyToCheck) {
+            if (array_key_exists($keyToCheck, $config) === false) {
+                throw new BadEventMetadataConfigurationExceptionAbstract("Key: [{$keyToCheck}] is missing in the supplied config");
+            }
         }
 
         return new self(
