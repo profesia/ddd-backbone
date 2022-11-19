@@ -20,7 +20,7 @@ class CustomerEventTest extends TestCase
         );
 
         $this->assertEquals('1', $event->getPrimaryId());
-        $this->assertEquals('100', $event->getCustomerId());
+        $this->assertEquals('100', $event->getUserId());
         $this->assertEquals($occurredOn, $event->getOccurredOn());
         $this->assertEquals(
             [

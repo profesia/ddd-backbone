@@ -6,7 +6,7 @@ namespace Profesia\DddBackbone\Domain\Exception;
 
 use RuntimeException;
 
-abstract class DomainException extends RuntimeException
+abstract class AbstractDomainException extends RuntimeException
 {
 
 }

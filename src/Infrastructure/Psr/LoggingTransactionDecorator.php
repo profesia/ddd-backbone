@@ -6,7 +6,7 @@ namespace Profesia\DddBackbone\Infrastructure\Psr;
 
 use Profesia\DddBackbone\Application\Log\Context;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
-use Profesia\DddBackbone\Domain\Exception\DomainException;
+use Profesia\DddBackbone\Domain\Exception\AbstractDomainException;
 use Profesia\DddBackbone\Infrastructure\Utils\Backtrace\FormatsBacktrace;
 use Psr\Log\LoggerInterface;
 
@@ -41,7 +41,7 @@ final class LoggingTransactionDecorator implements TransactionServiceInterface
     {
         try {
              return $this->transactionService->transactional($func);
-        } catch (DomainException $e) {
+        } catch (AbstractDomainException $e) {
             $this->logger->error(
                 $this->errorMessage,
                 [

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Profesia\DddBackbone\Application;
 
 use Profesia\DddBackbone\Application\Event\DequeueDispatcherInterface;
-use Profesia\DddBackbone\Domain\Exception\DomainException;
+use Profesia\DddBackbone\Domain\Exception\AbstractDomainException;
 
 final class EventFlushingTransactionDecorator implements TransactionServiceInterface
 {
@@ -34,7 +34,7 @@ final class EventFlushingTransactionDecorator implements TransactionServiceInter
      * @param callable $func
      *
      * @return mixed
-     * @throws DomainException
+     * @throws AbstractDomainException
      */
     public function transactional(callable $func): mixed
     {

@@ -6,18 +6,18 @@ namespace Profesia\DddBackbone\Domain\Event;
 
 use DateTimeImmutable;
 
-abstract class AbstractCustomerEvent extends AbstractDomainEvent
+abstract class AbstractUserEvent extends AbstractDomainEvent
 {
     public function __construct(
         string $primaryId,
-        private string $customerId,
+        private string $userId,
         ?DateTimeImmutable $occurredOn = null)
     {
         parent::__construct($primaryId, $occurredOn);
     }
 
-    public function getCustomerId(): string
+    public function getUserId(): string
     {
-        return $this->customerId;
+        return $this->userId;
     }
 }

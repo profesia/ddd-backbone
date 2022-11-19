@@ -20,7 +20,7 @@ class BusinessEventTest extends TestCase
         );
 
         $this->assertEquals('1', $event->getPrimaryId());
-        $this->assertEquals('100', $event->getBusinessId());
+        $this->assertEquals('100', $event->getCompanyId());
         $this->assertEquals($occurredOn, $event->getOccurredOn());
         $this->assertEquals(
             [

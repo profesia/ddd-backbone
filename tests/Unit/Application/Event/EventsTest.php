@@ -24,7 +24,7 @@ class EventsTest extends MockeryTestCase
                 [
                     'getOccurredOn' => $occurredOn,
                     'getPrimaryId'  => '1',
-                    'getCustomerId' => '100',
+                    'getUserId' => '100',
                  ]
             ],
             [
@@ -32,7 +32,7 @@ class EventsTest extends MockeryTestCase
                 [
                     'getOccurredOn' => $occurredOn,
                     'getPrimaryId'  => '2',
-                    'getBusinessId' => '200'
+                    'getCompanyId' => '200'
                 ]
             ]
         ];
