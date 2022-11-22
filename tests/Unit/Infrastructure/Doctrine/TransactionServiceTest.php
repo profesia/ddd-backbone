@@ -110,4 +110,32 @@ class TransactionServiceTest extends MockeryTestCase
             }
         );
     }
+
+    public function testCanReturnValueFromTransaction(): void
+    {
+        /** @var MockInterface|EntityManagerInterface $entityManager */
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('beginTransaction')
+            ->once();
+        $entityManager
+            ->shouldReceive('flush')
+            ->once();
+        $entityManager
+            ->shouldReceive('commit')
+            ->once();
+
+        $transactionService = new TransactionService(
+            $entityManager
+        );
+
+        $expectedValue = 'test';
+        $actualValue = $transactionService->transactional(
+            function () use ($expectedValue) {
+                return $expectedValue;
+            }
+        );
+
+        $this->assertEquals($expectedValue, $actualValue);
+    }
 }
