@@ -8,8 +8,8 @@ use Profesia\DddBackbone\Application\Event\Exception\MissingEventMetadataExcepti
 
 final class MetadataRegistry
 {
-    /** @var array<string, EventMetadata>  */
-    private array $config;
+    /** @var array<string, EventMetadata> */
+    private array $config = [];
 
     public static function createFromArrayConfig(array $events, string $provider, string $target): self
     {
@@ -17,7 +17,7 @@ final class MetadataRegistry
         foreach ($events as $eventName => $eventConfig) {
             $configToUse = [
                 'resource' => $eventConfig['resource'],
-                'provider' => $provider
+                'provider' => $provider,
             ];
 
             $configToUse['target'] = $eventConfig['targetOverride'] ?? $target;
