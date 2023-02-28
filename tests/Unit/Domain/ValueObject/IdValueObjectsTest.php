@@ -6,8 +6,8 @@ namespace Profesia\DddBackbone\Test\Unit\Domain\ValueObject;
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
-use Profesia\DddBackbone\Test\TestIntId;
-use Profesia\DddBackbone\Test\TestUuid4Id;
+use Profesia\DddBackbone\Test\Assets\TestIntId;
+use Profesia\DddBackbone\Test\Assets\TestUuid4Id;
 use Ramsey\Uuid\Rfc4122\UuidV4;
 
 class IdValueObjectsTest extends MockeryTestCase

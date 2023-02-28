@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Profesia\DddBackbone\Test;
 
-use Profesia\DddBackbone\Domain\Event\AbstractCompanyEvent;
+namespace Profesia\DddBackbone\Test\Assets;
 
-class NullB2BEvent extends AbstractCompanyEvent
+use Profesia\DddBackbone\Domain\Event\AbstractUserEvent;
+
+class NullB2CEvent extends AbstractUserEvent
 {
     public function getPayload(): array
     {
         return [
             'occurredOn' => $this->getOccurredOn()->format('Y-m-d H:i:s'),
             'primaryId'  => $this->getPrimaryId(),
-            'businessId' => $this->getCompanyId(),
+            'userId' => $this->getUserId(),
         ];
     }
 }

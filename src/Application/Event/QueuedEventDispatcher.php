@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Event;
 
+use RuntimeException;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
-use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
 
@@ -15,12 +15,20 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
     /** @var AbstractDomainEvent[] */
     private array $events;
 
+    private int $batchSize;
+
     public function __construct(
         private MessageBrokerInterface $messageBroker,
         private MessageFactory $messageFactory,
         private string $channel,
-        private string $correlationId
+        private string $correlationId,
+        int $batchSize = 500
     ) {
+        if ($batchSize <= 0 || $batchSize > 1000) {
+            throw new RuntimeException('Batch size should be in the interval <1,1000>');
+        }
+
+        $this->batchSize = $batchSize;
     }
 
     public function dispatch(AbstractDomainEvent $event): void
@@ -30,22 +38,38 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
 
     public function flush(): void
     {
-        $messages = array_map(
-            function (AbstractDomainEvent $event): Message {
-                return $this->messageFactory->createFromDomainEvent(
-                    $event,
-                    $this->correlationId
-                );
-            },
-            $this->events
-        );
+        $counter       = 1;
+        $messagesBatch = [];
+        foreach ($this->events as $event) {
+            $messagesBatch[] = $this->messageFactory->createFromDomainEvent(
+                $event,
+                $this->correlationId
+            );
 
-        $this->messageBroker->publish(
-            MessageCollection::createFromMessagesAndChannel(
-                   $this->channel,
-                ...$messages
-            )
-        );
+            if ($counter % $this->batchSize === 0) {
+                $counter = 0;
+
+                $this->messageBroker->publish(
+                    MessageCollection::createFromMessagesAndChannel(
+                           $this->channel,
+                        ...$messagesBatch
+                    )
+                );
+
+                $messagesBatch = [];
+            }
+
+            $counter++;
+        }
+
+        if ($messagesBatch !== []) {
+            $this->messageBroker->publish(
+                MessageCollection::createFromMessagesAndChannel(
+                       $this->channel,
+                    ...$messagesBatch
+                )
+            );
+        }
     }
 
 }

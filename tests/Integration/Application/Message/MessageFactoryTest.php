@@ -7,7 +7,7 @@ namespace Profesia\DddBackbone\Test\Integration\Application\Message;
 use PHPUnit\Framework\TestCase;
 use Profesia\DddBackbone\Application\Event\MetadataRegistry;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
-use Profesia\DddBackbone\Test\NullEvent;
+use Profesia\DddBackbone\Test\Assets\NullEvent;
 use Profesia\MessagingCore\Broking\Dto\Message;
 
 class MessageFactoryTest extends TestCase

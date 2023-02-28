@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Profesia\DddBackbone\Test\Integration\Event;
 
 use PHPUnit\Framework\TestCase;
-use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
-use Profesia\DddBackbone\Test\Integration\NullDequeueDispatcher;
-use Profesia\DddBackbone\Test\Integration\NullTransactionService;
 use Profesia\DddBackbone\Application\EventFlushingTransactionDecorator;
+use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
 use Profesia\DddBackbone\Infrastructure\Psr\LoggingTransactionDecorator;
+use Profesia\DddBackbone\Test\Assets\NullDequeueDispatcher;
+use Profesia\DddBackbone\Test\Assets\NullTransactionService;
 use Psr\Log\NullLogger;
 
 class TransactionServiceTest extends TestCase

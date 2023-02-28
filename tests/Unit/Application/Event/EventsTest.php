@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Test\Unit\Application\Event;
 
-use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
-use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
-use Profesia\DddBackbone\Test\NullB2BEvent;
-use Profesia\DddBackbone\Test\NullB2CEvent;
 use DateTimeImmutable;
 use Mockery;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
+use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
+use Profesia\DddBackbone\Test\Assets\NullB2BEvent;
+use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
 
 class EventsTest extends MockeryTestCase
 {

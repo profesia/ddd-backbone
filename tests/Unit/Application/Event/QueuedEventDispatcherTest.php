@@ -11,11 +11,13 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
-use Profesia\DddBackbone\Test\NullEvent;
+use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
+use Profesia\DddBackbone\Test\Assets\NullEvent;
 use Profesia\MessagingCore\Broking\Dto\BrokingBatchResponse;
 use Profesia\MessagingCore\Broking\Dto\Message;
 use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
+use Ramsey\Uuid\Uuid;
 
 class QueuedEventDispatcherTest extends MockeryTestCase
 {
@@ -127,6 +129,96 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 }
             )->andReturn(
                 $batchResponse
+            );
+
+        $dispatcher->flush();
+    }
+
+    public function testCanSplitMessagesIntoBatches(): void
+    {
+        /** @var MockInterface|MessageBrokerInterface $messageBroker */
+        $messageBroker = Mockery::mock(MessageBrokerInterface::class);
+
+        /** @var MockInterface|MessageFactory $factory */
+        $factory = Mockery::mock(MessageFactory::class);
+
+        $channel       = 'channel';
+        $correlationId = Uuid::uuid4()->toString();
+        $dispatcher    = new QueuedEventDispatcher(
+            $messageBroker,
+            $factory,
+            $channel,
+            $correlationId,
+            20
+        );
+
+        $events   = [];
+        $messages = [];
+        for ($i = 1; $i <= 45; $i++) {
+            $events[$i]   = new NullB2CEvent(
+                (string)$i,
+                (string)($i + 100)
+            );
+            $messages[$i] = new Message(
+                'Resource',
+                'EventType',
+                'Provider',
+                (string)$i,
+                new DateTimeImmutable(),
+                $correlationId,
+                'Target',
+                $events[$i]->getPayload()
+            );
+
+            $dispatcher->dispatch(
+                $events[$i]
+            );
+
+            $factory
+                ->shouldReceive('createFromDomainEvent')
+                ->once()
+                ->withArgs(
+                    [
+                        $events[$i],
+                        $correlationId,
+                    ]
+                )->andReturn(
+                    $messages[$i]
+                );
+        }
+
+        $counter = 0;
+        $messageBroker
+            ->shouldReceive('publish')
+            ->times(3)
+            ->withArgs(
+                function (MessageCollection $collection) use ($channel, $messages, &$counter): bool {
+                    if ($channel !== $collection->getChannel()) {
+                        return false;
+                    }
+
+                    $offset = $counter * 20;
+                    $slice  = array_slice($messages, $offset, 20);
+                    $counter++;
+
+                    return ($collection->getMessages() === $slice);
+                }
+            )->andReturn(
+                BrokingBatchResponse::createForMessagesWithBatchStatus(
+                       true,
+                       'status',
+                    ...array_slice($messages, 0, 20)
+                ),
+                BrokingBatchResponse::createForMessagesWithBatchStatus(
+                       true,
+                       'status',
+                    ...array_slice($messages, 20, 20)
+                ),
+                BrokingBatchResponse::createForMessagesWithBatchStatus(
+                       true,
+                       'status',
+                    ...array_slice($messages, 40, 5)
+                )
             );
 
         $dispatcher->flush();

@@ -6,7 +6,7 @@ namespace Profesia\DddBackbone\Test\Integration\Event;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
-use Profesia\DddBackbone\Test\NullB2CEvent;
+use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
 
 class CustomerEventTest extends TestCase
 {
@@ -26,7 +26,7 @@ class CustomerEventTest extends TestCase
             [
                 'occurredOn' => $occurredOn->format('Y-m-d H:i:s'),
                 'primaryId'  => '1',
-                'customerId' => '100',
+                'userId'     => '100',
             ],
             $event->getPayload()
         );
