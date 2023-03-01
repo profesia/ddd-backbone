@@ -201,7 +201,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                     $slice  = array_slice($messages, $offset, 20);
                     $counter++;
 
-                    return ($collection->getMessages() === $slice);
+                    return (array_values($collection->getMessages()) === array_values($slice));
                 }
             )->andReturn(
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
@@ -219,6 +219,81 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                        'status',
                     ...array_slice($messages, 40, 5)
                 )
+            );
+
+        $dispatcher->flush();
+    }
+
+    public function testCanSendFewerMessagesThanBatchSize(): void
+    {
+        /** @var MockInterface|MessageBrokerInterface $messageBroker */
+        $messageBroker = Mockery::mock(MessageBrokerInterface::class);
+
+        /** @var MockInterface|MessageFactory $factory */
+        $factory = Mockery::mock(MessageFactory::class);
+
+        $channel       = 'channel';
+        $correlationId = Uuid::uuid4()->toString();
+        $dispatcher    = new QueuedEventDispatcher(
+            $messageBroker,
+            $factory,
+            $channel,
+            $correlationId,
+            100
+        );
+
+        $events   = [];
+        $messages = [];
+        for ($i = 1; $i <= 20; $i++) {
+            $events[$i]   = new NullB2CEvent(
+                (string)$i,
+                (string)($i + 100)
+            );
+            $messages[$i] = new Message(
+                'Resource',
+                'EventType',
+                'Provider',
+                (string)$i,
+                new DateTimeImmutable(),
+                $correlationId,
+                'Target',
+                $events[$i]->getPayload()
+            );
+
+            $dispatcher->dispatch(
+                $events[$i]
+            );
+
+            $factory
+                ->shouldReceive('createFromDomainEvent')
+                ->once()
+                ->withArgs(
+                    [
+                        $events[$i],
+                        $correlationId,
+                    ]
+                )->andReturn(
+                    $messages[$i]
+                );
+        }
+
+        $messageBroker
+            ->shouldReceive('publish')
+            ->once()
+            ->withArgs(
+                function (MessageCollection $collection) use ($channel, $messages): bool {
+                    if ($channel !== $collection->getChannel()) {
+                        return false;
+                    }
+
+                    return (array_values($collection->getMessages()) === array_values($messages));
+                }
+            )->andReturn(
+                BrokingBatchResponse::createForMessagesWithBatchStatus(
+                       true,
+                       'status',
+                    ...$messages
+                ),
             );
 
         $dispatcher->flush();
