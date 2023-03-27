@@ -12,6 +12,6 @@ interface TransactionServiceInterface
 
     public function rollback(): void;
 
-    public function transactional(callable $func): mixed;
+    public function transactional(callable $func);
 }
 

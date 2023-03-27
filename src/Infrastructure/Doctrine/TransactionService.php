@@ -39,7 +39,7 @@ class TransactionService implements TransactionServiceInterface
      * @return mixed
      * @throws Throwable
      */
-    public function transactional(callable $func): mixed
+    public function transactional(callable $func)
     {
         $this->start();
 

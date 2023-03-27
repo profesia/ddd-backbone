@@ -10,9 +10,9 @@
     }
   ],
   "require": {
-    "php": "^8.0",
-    "psr/log": "^1.0 || ^2.0 || ^3.0",
-    "profesia/messaging-core": "^1.0",
+    "php": "~7.4",
+    "psr/log": "^1.0 || ^2.0",
+    "profesia/messaging-core": "dev-feature/php7.4",
     "doctrine/orm": "^2.13"
   },
   "autoload": {
@@ -41,5 +41,10 @@
   "scripts": {
     "test": "XDEBUG_MODE=coverage ./vendor/bin/phpunit",
     "analyse": "phpstan analyse"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }

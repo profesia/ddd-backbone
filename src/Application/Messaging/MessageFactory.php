@@ -10,10 +10,13 @@ use Profesia\MessagingCore\Broking\Dto\Message;
 
 class MessageFactory
 {
+    private MetadataRegistry $metadataRegistry;
+
     public function __construct(
-        private MetadataRegistry $metadataRegistry
-    )
-    {}
+        MetadataRegistry $metadataRegistry
+    ) {
+        $this->metadataRegistry = $metadataRegistry;
+    }
 
     public function createFromDomainEvent(AbstractDomainEvent $event, string $correlationId): Message
     {

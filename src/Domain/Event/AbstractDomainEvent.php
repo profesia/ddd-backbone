@@ -8,15 +8,21 @@ use DateTimeImmutable;
 
 abstract class AbstractDomainEvent
 {
+    private string $primaryId;
+    private ?DateTimeImmutable $occurredOn = null;
+
 
     public function __construct(
-        private string $primaryId,
-        private ?DateTimeImmutable $occurredOn = null
+        string $primaryId,
+        ?DateTimeImmutable $occurredOn = null
     )
     {
+        $this->occurredOn = $occurredOn;
         if ($this->occurredOn === null) {
             $this->occurredOn = new DateTimeImmutable();
         }
+
+        $this->primaryId = $primaryId;
     }
 
     public function getPrimaryId(): string
