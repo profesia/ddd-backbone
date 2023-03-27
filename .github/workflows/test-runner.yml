@@ -16,6 +16,11 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
+      - name: Prepare PHP
+        uses: nanasess/setup-php@v3
+        with:
+          php-version: 7.4
+
       - name: Checkout code
         uses: actions/checkout@v2
 
