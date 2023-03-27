@@ -18,7 +18,7 @@ class MessageFactory
     public function createFromDomainEvent(AbstractDomainEvent $event, string $correlationId): Message
     {
         $metadata = $this->metadataRegistry->getEventMetadata(
-            get_class($event)
+            $event
         );
 
         return new Message(

@@ -30,5 +30,10 @@ abstract class AbstractDomainEvent
     }
 
     public abstract function getPayload(): array;
+
+    public static function getEventName(): string
+    {
+        return self::class;
+    }
 }
 
