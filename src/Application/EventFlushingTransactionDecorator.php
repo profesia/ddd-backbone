@@ -9,10 +9,15 @@ use Profesia\DddBackbone\Domain\Exception\AbstractDomainException;
 
 final class EventFlushingTransactionDecorator implements TransactionServiceInterface
 {
+    private TransactionServiceInterface $decoratedObject;
+    private DequeueDispatcherInterface $dequeueTrigger;
+
     public function __construct(
-        private TransactionServiceInterface $decoratedObject,
-        private DequeueDispatcherInterface $dequeueTrigger
+        TransactionServiceInterface $decoratedObject,
+        DequeueDispatcherInterface $dequeueTrigger
     ) {
+        $this->decoratedObject = $decoratedObject;
+        $this->dequeueTrigger  = $dequeueTrigger;
     }
 
     public function start(): void
@@ -33,10 +38,9 @@ final class EventFlushingTransactionDecorator implements TransactionServiceInter
     /**
      * @param callable $func
      *
-     * @return mixed
      * @throws AbstractDomainException
      */
-    public function transactional(callable $func): mixed
+    public function transactional(callable $func)
     {
         $result = $this->decoratedObject->transactional($func);
         $this->dequeueTrigger->flush();

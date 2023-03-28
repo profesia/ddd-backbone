@@ -8,12 +8,15 @@ use Profesia\DddBackbone\Application\Event\Exception\BadEventMetadataConfigurati
 
 final class EventMetadata
 {
-    private function __construct(
-        private string $resource,
-        private string $provider,
-        private string $target
-    )
+    private string $resource;
+    private string $provider;
+    private string $target;
+
+    private function __construct(string $resource, string $provider, string $target)
     {
+        $this->resource = $resource;
+        $this->provider = $provider;
+        $this->target   = $target;
     }
 
     public static function createFromArray(array $config): self
@@ -21,7 +24,7 @@ final class EventMetadata
         $requiredKeys = [
             'resource',
             'provider',
-            'target'
+            'target',
         ];
 
         foreach ($requiredKeys as $keyToCheck) {

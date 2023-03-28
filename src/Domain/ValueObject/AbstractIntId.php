@@ -8,12 +8,15 @@ use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
 
 abstract class AbstractIntId
 {
+    protected int $value;
+
     private function __construct(
-        protected int $value
+        int $value
     ) {
+        $this->value = $value;
     }
 
-    public static function createFromInt(int $value): static
+    public static function createFromInt(int $value): self
     {
         if ($value <= 0) {
             throw new InvalidArgumentException("Value: [{$value}] is not a positive integer.");

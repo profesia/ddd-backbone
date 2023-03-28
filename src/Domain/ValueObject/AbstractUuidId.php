@@ -8,12 +8,15 @@ use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
 
 abstract class AbstractUuidId
 {
+    protected string $value;
+
     private function __construct(
-        protected string $value
+        string $value
     ) {
+        $this->value = $value;
     }
 
-    public static function createFromString(string $value): static
+    public static function createFromString(string $value): self
     {
         if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $value) !== 1) {
             throw new InvalidArgumentException("Value: [{$value}] is not a valid string representation of an UUID");

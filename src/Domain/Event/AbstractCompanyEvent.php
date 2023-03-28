@@ -8,11 +8,14 @@ use DateTimeImmutable;
 
 abstract class AbstractCompanyEvent extends AbstractDomainEvent
 {
+    private string $companyId;
+
     public function __construct(
         string $primaryId,
-        private string $companyId,
-        ?DateTimeImmutable $occurredOn = null)
-    {
+        string $companyId,
+        ?DateTimeImmutable $occurredOn = null
+    ) {
+        $this->companyId = $companyId;
         parent::__construct($primaryId, $occurredOn);
     }
 

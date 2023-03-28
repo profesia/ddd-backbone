@@ -12,23 +12,31 @@ use Profesia\MessagingCore\Broking\MessageBrokerInterface;
 
 final class QueuedEventDispatcher implements DequeueDispatcherInterface
 {
+    private MessageBrokerInterface $messageBroker;
+    private MessageFactory $messageFactory;
+    private string $channel;
+    private string $correlationId;
+
     /** @var AbstractDomainEvent[] */
     private array $events;
-
     private int $batchSize;
 
     public function __construct(
-        private MessageBrokerInterface $messageBroker,
-        private MessageFactory $messageFactory,
-        private string $channel,
-        private string $correlationId,
+        MessageBrokerInterface $messageBroker,
+        MessageFactory $messageFactory,
+        string $channel,
+        string $correlationId,
         int $batchSize = 500
     ) {
         if ($batchSize <= 0 || $batchSize > 1000) {
             throw new RuntimeException('Batch size should be in the interval <1,1000>');
         }
 
-        $this->batchSize = $batchSize;
+        $this->messageBroker  = $messageBroker;
+        $this->messageFactory = $messageFactory;
+        $this->channel        = $channel;
+        $this->correlationId  = $correlationId;
+        $this->batchSize      = $batchSize;
     }
 
     public function dispatch(AbstractDomainEvent $event): void

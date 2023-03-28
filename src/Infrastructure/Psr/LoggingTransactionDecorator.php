@@ -14,12 +14,18 @@ final class LoggingTransactionDecorator implements TransactionServiceInterface
 {
     use FormatsBacktrace;
 
+    private TransactionServiceInterface $transactionService;
+    private LoggerInterface $logger;
+    private string $errorMessage;
+
     public function __construct(
-        private TransactionServiceInterface $transactionService,
-        private LoggerInterface $logger,
-        private string $errorMessage
-    )
-    {
+        TransactionServiceInterface $transactionService,
+        LoggerInterface $logger,
+        string $errorMessage
+    ) {
+        $this->transactionService = $transactionService;
+        $this->logger             = $logger;
+        $this->errorMessage       = $errorMessage;
     }
 
     public function start(): void
@@ -37,10 +43,15 @@ final class LoggingTransactionDecorator implements TransactionServiceInterface
         $this->transactionService->rollback();
     }
 
-    public function transactional(callable $func): mixed
+    /**
+     * @param callable $func
+     *
+     * @return mixed
+     */
+    public function transactional(callable $func)
     {
         try {
-             return $this->transactionService->transactional($func);
+            return $this->transactionService->transactional($func);
         } catch (AbstractDomainException $e) {
             $this->logger->error(
                 $this->errorMessage,

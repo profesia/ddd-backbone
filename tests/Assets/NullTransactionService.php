@@ -20,7 +20,12 @@ class NullTransactionService implements TransactionServiceInterface
     {
     }
 
-    public function transactional(callable $func): mixed
+    /**
+     * @param callable $func
+     *
+     * @return mixed
+     */
+    public function transactional(callable $func)
     {
         return $func();
     }

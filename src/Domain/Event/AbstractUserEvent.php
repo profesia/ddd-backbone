@@ -8,12 +8,15 @@ use DateTimeImmutable;
 
 abstract class AbstractUserEvent extends AbstractDomainEvent
 {
+    private string $userId;
+
     public function __construct(
         string $primaryId,
-        private string $userId,
-        ?DateTimeImmutable $occurredOn = null)
-    {
+        string $userId,
+        ?DateTimeImmutable $occurredOn = null
+    ) {
         parent::__construct($primaryId, $occurredOn);
+        $this->userId = $userId;
     }
 
     public function getUserId(): string
