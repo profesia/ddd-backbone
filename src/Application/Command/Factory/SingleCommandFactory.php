@@ -9,14 +9,13 @@ use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistE
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
 use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
 
-class EventCommandFactory
+class SingleCommandFactory implements CommandFactoryInterface
 {
-    /** @var string[] */
-    private array $eventCommandMap = [];
+    private ?string $commandClass = null;
 
-    public function registerCommandClass(string $eventType, string $commandClass): self
+    public function registerCommandClass(string $eventType, string $commandClass): CommandFactoryInterface
     {
-        $this->eventCommandMap[$eventType] = $commandClass;
+        $this->commandClass = $commandClass;
 
         return $this;
     }
@@ -24,20 +23,21 @@ class EventCommandFactory
     public function createFromReceivedMessage(ReceivedMessage $receivedMessage): CommandInterface
     {
         $eventType = $receivedMessage->getEventType();
-        if (array_key_exists($eventType, $this->eventCommandMap) === false) {
+        if ($this->commandClass === null) {
             throw new NoCommandRegisteredForEventTypeException("No command registered for event type: [{$eventType}]");
         }
 
-        if (class_exists($this->eventCommandMap[$eventType]) === false) {
-            throw new CommandClassDoesNotExistException("Command class: [{$this->eventCommandMap[$eventType]}] does not exist");
+        if (class_exists($this->commandClass) === false) {
+            throw new CommandClassDoesNotExistException("Command class: [{$this->commandClass}] does not exist");
         }
 
         return call_user_func(
             [
-                $this->eventCommandMap[$eventType],
+                $this->commandClass,
                 'createFromJsonString'
             ],
             $receivedMessage->decodePayload()
         );
     }
+
 }
