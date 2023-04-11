@@ -33,7 +33,7 @@ abstract class AbstractCommandFactory implements CommandFactoryInterface
         }
     }
 
-    protected static function crateCommand(string $commandClass, ReceivedMessage $message): CommandInterface
+    protected static function createCommand(string $commandClass, ReceivedMessage $message): CommandInterface
     {
         return call_user_func(
             [

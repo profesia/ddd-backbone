@@ -34,6 +34,6 @@ final class EventCommandMapFactory extends AbstractCommandFactory
             throw new NoCommandRegisteredForEventTypeException("No command registered for the event type: [$eventType]");
         }
 
-        return self::crateCommand($this->eventCommandMap[$eventType], $receivedMessage);
+        return self::createCommand($this->eventCommandMap[$eventType], $receivedMessage);
     }
 }

@@ -33,7 +33,7 @@ final class SingleCommandFactory extends AbstractCommandFactory
             throw new NoCommandRegisteredForEventTypeException("No command registered for the event type: [$eventType]");
         }
 
-        return self::crateCommand($this->commandClass, $receivedMessage);
+        return self::createCommand($this->commandClass, $receivedMessage);
     }
 
 }
