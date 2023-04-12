@@ -21,7 +21,6 @@ abstract class AbstractCommandFromMessageFromMessageFactory implements CommandFr
     {
         if (class_exists($className) === false) {
             throw new CommandClassDoesNotExistException("Command class: [$className] does not exist");
-
         }
 
         $abstractClass = AbstractCommandFromMessage::class;
@@ -34,6 +33,6 @@ abstract class AbstractCommandFromMessageFromMessageFactory implements CommandFr
 
     protected static function createCommand(string $commandClass, ReceivedMessage $message): CommandInterface
     {
-        return $commandClass($message->getDecodedMessage());
+        return new $commandClass($message->getDecodedMessage());
     }
 }
