@@ -33,6 +33,6 @@ abstract class AbstractCommandFromMessageFromMessageFactory implements CommandFr
 
     protected static function createCommand(string $commandClass, ReceivedMessage $message): CommandInterface
     {
-        return new $commandClass($message->getDecodedMessage());
+        return new $commandClass($message);
     }
 }
