@@ -9,7 +9,7 @@ use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistE
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
 use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
 
-interface CommandFactoryInterface
+interface CommandFromMessageFactoryInterface
 {
     /**
      * @param string $eventType

@@ -8,7 +8,7 @@ use Profesia\DddBackbone\Application\Command\CommandInterface;
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
 use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
 
-final class EventCommandMapFactory extends AbstractCommandFactory
+final class CommandMapFromMessagesFactory extends AbstractCommandFromMessageFromMessageFactory
 {
     /** @var string[] */
     private array $eventCommandMap = [];

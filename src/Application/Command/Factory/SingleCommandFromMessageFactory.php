@@ -8,14 +8,14 @@ use Profesia\DddBackbone\Application\Command\CommandInterface;
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
 use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
 
-final class SingleCommandFactory extends AbstractCommandFactory
+final class SingleCommandFromMessageFactory extends AbstractCommandFromMessageFromMessageFactory
 {
     private ?string $commandClass = null;
 
     /**
      * @inheritdoc
      */
-    public function registerCommandClass(string $eventType, string $commandClass): CommandFactoryInterface
+    public function registerCommandClass(string $eventType, string $commandClass): CommandFromMessageFactoryInterface
     {
         self::validateCommandClass($commandClass);
         $this->commandClass = $commandClass;

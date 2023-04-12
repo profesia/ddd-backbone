@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Command\Factory;
 
+use Profesia\DddBackbone\Application\Command\AbstractCommandFromMessage;
 use Profesia\DddBackbone\Application\Command\CommandInterface;
 use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistException;
 use Profesia\DddBackbone\Application\Command\Exception\NotValidCommandClassException;
@@ -11,7 +12,7 @@ use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
 use ReflectionClass;
 use ReflectionException;
 
-abstract class AbstractCommandFactory implements CommandFactoryInterface
+abstract class AbstractCommandFromMessageFromMessageFactory implements CommandFromMessageFactoryInterface
 {
     /**
      * @param string $className
@@ -22,9 +23,9 @@ abstract class AbstractCommandFactory implements CommandFactoryInterface
     {
         try {
             $reflectionClass = new ReflectionClass($className);
-            if ($reflectionClass->implementsInterface(CommandInterface::class) === false) {
-                $interface = CommandInterface::class;
-                throw new NotValidCommandClassException("Command class: [$className] does not implement a [$interface] interface");
+            $abstractClass = AbstractCommandFromMessage::class;
+            if ($reflectionClass->isInstance($abstractClass) === false) {
+                throw new NotValidCommandClassException("Command class: [$className] does not extend an [$abstractClass]");
             }
 
             return true;
@@ -35,12 +36,6 @@ abstract class AbstractCommandFactory implements CommandFactoryInterface
 
     protected static function createCommand(string $commandClass, ReceivedMessage $message): CommandInterface
     {
-        return call_user_func(
-            [
-                $commandClass,
-                'createFromReceivedMessage'
-            ],
-            $message
-        );
+        return $commandClass($message->getDecodedMessage());
     }
 }
