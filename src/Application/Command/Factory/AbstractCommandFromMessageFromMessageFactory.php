@@ -9,8 +9,6 @@ use Profesia\DddBackbone\Application\Command\CommandInterface;
 use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistException;
 use Profesia\DddBackbone\Application\Command\Exception\NotValidCommandClassException;
 use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
-use ReflectionClass;
-use ReflectionException;
 
 abstract class AbstractCommandFromMessageFromMessageFactory implements CommandFromMessageFactoryInterface
 {
@@ -21,17 +19,17 @@ abstract class AbstractCommandFromMessageFromMessageFactory implements CommandFr
      */
     protected static function validateCommandClass(string $className): bool
     {
-        try {
-            $reflectionClass = new ReflectionClass($className);
-            $abstractClass = AbstractCommandFromMessage::class;
-            if ($reflectionClass->isInstance($abstractClass) === false) {
-                throw new NotValidCommandClassException("Command class: [$className] does not extend an [$abstractClass]");
-            }
+        if (class_exists($className) === false) {
+            throw new CommandClassDoesNotExistException("Command class: [$className] does not exist");
 
-            return true;
-        } catch (ReflectionException $e) {
-            throw new CommandClassDoesNotExistException("Not valid command class supplied. Details: [{$e->getMessage()}]");
         }
+
+        $abstractClass = AbstractCommandFromMessage::class;
+        if (is_subclass_of($className, $abstractClass) === false) {
+            throw new NotValidCommandClassException("Command class: [$className] does not extend an [$abstractClass]");
+        }
+
+        return true;
     }
 
     protected static function createCommand(string $commandClass, ReceivedMessage $message): CommandInterface
