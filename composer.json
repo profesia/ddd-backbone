@@ -13,8 +13,7 @@
     "php": ">=7.4",
     "psr/log": "^1.0 || ^2.0 || ^3.0",
     "profesia/messaging-core": "dev-feature/implemented-received-message-dto",
-    "doctrine/orm": "^2.13",
-    "symfony/messenger": "^5.4"
+    "doctrine/orm": "^2.13"
   },
   "autoload": {
     "psr-4": {
