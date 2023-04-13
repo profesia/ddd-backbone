@@ -10,10 +10,13 @@ use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 
 class ExternalEventDispatcher implements DispatcherInterface
 {
-    public function __construct(
-        private MetadataRegistry $registry,
-        private DispatcherInterface $decoratedObject
-    ) {
+    private MetadataRegistry $registry;
+    private DispatcherInterface $decoratedObject;
+
+    public function __construct(MetadataRegistry $registry, DispatcherInterface $decoratedObject)
+    {
+        $this->registry        = $registry;
+        $this->decoratedObject = $decoratedObject;
     }
 
     public function dispatch(AbstractDomainEvent $event): void
