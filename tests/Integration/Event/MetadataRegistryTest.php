@@ -5,8 +5,15 @@ declare(strict_types=1);
 namespace Profesia\DddBackbone\Test\Integration\Event;
 
 use PHPUnit\Framework\TestCase;
+use Profesia\DddBackbone\Application\Event\Exception\BadMetadataKeyException;
 use Profesia\DddBackbone\Application\Event\Exception\MissingEventMetadataException;
 use Profesia\DddBackbone\Application\Event\MetadataRegistry;
+use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
+use Profesia\DddBackbone\Test\Assets\NullB2BEvent;
+use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
+use Profesia\DddBackbone\Test\Assets\NullEvent;
+use Profesia\DddBackbone\Test\Assets\NullMessageBroker;
+use Profesia\DddBackbone\Test\Assets\NullUnregisteredEvent;
 
 class MetadataRegistryTest extends TestCase
 {
@@ -14,9 +21,13 @@ class MetadataRegistryTest extends TestCase
     {
         $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
+        $event          = new NullB2CEvent(
+            '1',
+            '100'
+        );
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
-                'eventName' => [
+                $event::getEventName() => [
                     'resource' => 'resource',
                 ],
             ],
@@ -24,25 +35,73 @@ class MetadataRegistryTest extends TestCase
             $globalTarget
         );
 
-        $metadata = $registry->getEventMetadata('eventName');
+        $metadata = $registry->getEventMetadata($event);
         $this->assertEquals('resource', $metadata->getResource());
         $this->assertEquals($globalTarget, $metadata->getTarget());
         $this->assertEquals($globalProvider, $metadata->getProvider());
+    }
+
+    public function testCanDetectNonExistingClassDuringRegistration(): void
+    {
+        $globalTarget   = 'globalTarget';
+        $globalProvider = 'globalProvider';
+
+        $eventName = 'nonExistingClassName';
+        $this->expectExceptionObject(
+            new BadMetadataKeyException("Supplied string: [$eventName] is not a loadable class")
+        );
+
+        MetadataRegistry::createFromArrayConfig(
+            [
+                $eventName => [
+                    'resource' => 'resource',
+                ],
+            ],
+            $globalProvider,
+            $globalTarget
+        );
+    }
+
+    public function testCanDetectClassNotDescendingOfRequiredDomainClass(): void
+    {
+        $globalTarget   = 'globalTarget';
+        $globalProvider = 'globalProvider';
+
+        $eventName   = NullMessageBroker::class;
+        $parentClass = AbstractDomainEvent::class;
+        $this->expectExceptionObject(
+            new BadMetadataKeyException("Class: [$eventName] is not a descendant of [$parentClass] class")
+        );
+
+        MetadataRegistry::createFromArrayConfig(
+            [
+                $eventName => [
+                    'resource' => 'resource',
+                ],
+            ],
+            $globalProvider,
+            $globalTarget
+        );
     }
 
     public function testCanDetectUnRegisteredEventMetadata(): void
     {
         $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
+        $events         = [
+            1 => new NullB2CEvent('1', '100'),
+            2 => new NullB2BEvent('2', '101'),
+            3 => new NullEvent('3'),
+        ];
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
-                'eventName1' => [
+                $events[1]::getEventName() => [
                     'resource' => 'resource1',
                 ],
-                'eventName2' => [
+                $events[2]::getEventName() => [
                     'resource' => 'resource2',
                 ],
-                'eventName3' => [
+                $events[3]::getEventName() => [
                     'resource' => 'resource3',
                 ],
             ],
@@ -51,32 +110,37 @@ class MetadataRegistryTest extends TestCase
         );
 
         for ($i = 1; $i <= 3; $i++) {
-            $metadata = $registry->getEventMetadata("eventName{$i}");
+            $metadata = $registry->getEventMetadata($events[$i]);
             $this->assertEquals("resource{$i}", $metadata->getResource());
             $this->assertEquals($globalTarget, $metadata->getTarget());
             $this->assertEquals($globalProvider, $metadata->getProvider());
         }
 
         $this->expectExceptionObject(
-            new MissingEventMetadataException('Metadata for event: [unregisteredEvent] are not registered')
+            new MissingEventMetadataException('Metadata for event: [Profesia\DddBackbone\Test\Assets\NullUnregisteredEvent] are not registered')
         );
-        $registry->getEventMetadata('unregisteredEvent');
+        $registry->getEventMetadata(new NullUnregisteredEvent('500'));
     }
 
     public function testCanOverrideGlobalTarget(): void
     {
         $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
+        $events         = [
+            1 => new NullB2CEvent('1', '100'),
+            2 => new NullB2BEvent('2', '101'),
+            3 => new NullEvent('3'),
+        ];
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
-                'eventName1' => [
+                $events[1]::getEventName() => [
                     'resource' => 'resource1',
                 ],
-                'eventName2' => [
+                $events[2]::getEventName() => [
                     'resource'       => 'resource2',
                     'targetOverride' => 'targetOverride',
                 ],
-                'eventName3' => [
+                $events[3]::getEventName() => [
                     'resource' => 'resource3',
                 ],
             ],
@@ -85,7 +149,7 @@ class MetadataRegistryTest extends TestCase
         );
 
         for ($i = 1; $i <= 3; $i++) {
-            $metadata = $registry->getEventMetadata("eventName{$i}");
+            $metadata = $registry->getEventMetadata($events[$i]);
             $this->assertEquals("resource{$i}", $metadata->getResource());
             if ($i !== 2) {
                 $this->assertEquals($globalTarget, $metadata->getTarget());

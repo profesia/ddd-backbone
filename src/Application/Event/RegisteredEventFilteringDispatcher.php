@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Profesia\DddBackbone\Infrastructure\Symfony\Event;
+namespace Profesia\DddBackbone\Application\Event;
 
-use Profesia\DddBackbone\Application\Event\MetadataRegistry;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
 use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 
-class ExternalEventDispatcher implements DispatcherInterface
+final class RegisteredEventFilteringDispatcher implements DispatcherInterface
 {
-    private MetadataRegistry $registry;
+    private MetadataRegistry    $registry;
     private DispatcherInterface $decoratedObject;
 
     public function __construct(MetadataRegistry $registry, DispatcherInterface $decoratedObject)

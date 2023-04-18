@@ -39,7 +39,7 @@ abstract class AbstractDomainEvent
 
     public static function getEventName(): string
     {
-        return self::class;
+        return static::class;
     }
 }
 

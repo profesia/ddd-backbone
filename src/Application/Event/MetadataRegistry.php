@@ -8,7 +8,7 @@ use Profesia\DddBackbone\Application\Event\Exception\BadMetadataKeyException;
 use Profesia\DddBackbone\Application\Event\Exception\MissingEventMetadataException;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
 
-final class MetadataRegistry
+class MetadataRegistry
 {
     /** @var array<string, EventMetadata> */
     private array $config = [];
@@ -35,12 +35,13 @@ final class MetadataRegistry
 
     public function registerEventMetadata(string $eventName, EventMetadata $metadata): void
     {
-        if (class_exists($eventName) !== false) {
-            throw new BadMetadataKeyException("Supplied string: [{$eventName}] is not a loadable class");
+        if (class_exists($eventName) === false) {
+            throw new BadMetadataKeyException("Supplied string: [$eventName] is not a loadable class");
         }
 
-        if (is_subclass_of($eventName, AbstractDomainEvent::class) === false) {
-            throw new BadMetadataKeyException("Class: [{$eventName}] is not a descendant of AbstractDomainEvent class");
+        $parentClass = AbstractDomainEvent::class;
+        if (is_subclass_of($eventName, $parentClass) === false) {
+            throw new BadMetadataKeyException("Class: [$eventName] is not a descendant of [$parentClass] class");
         }
 
         $this->config[$eventName] = $metadata;
@@ -49,7 +50,7 @@ final class MetadataRegistry
     public function getEventMetadata(AbstractDomainEvent $event): EventMetadata
     {
         $eventName = $event::getEventName();
-        if ($this->hasEventMetadata($event)) {
+        if ($this->hasEventMetadata($event) === false) {
             throw new MissingEventMetadataException("Metadata for event: [{$eventName}] are not registered");
         }
 

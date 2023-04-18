@@ -17,7 +17,6 @@ class MessageFactoryTest extends TestCase
         $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
         $event          = new NullEvent('8d0e43fd-d5d4-4b61-8963-e777c591cf0d');
-        $eventName      = get_class($event);
         $config         = [
             'resource' => 'resource',
             'provider' => 'provider',
@@ -25,7 +24,7 @@ class MessageFactoryTest extends TestCase
 
         $registry = MetadataRegistry::createFromArrayConfig(
             [
-                $eventName => $config,
+                $event::getEventName() => $config,
             ],
             $globalProvider,
             $globalTarget

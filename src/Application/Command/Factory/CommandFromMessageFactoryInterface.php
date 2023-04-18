@@ -7,7 +7,7 @@ namespace Profesia\DddBackbone\Application\Command\Factory;
 use Profesia\DddBackbone\Application\Command\CommandInterface;
 use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistException;
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
-use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
+use Profesia\MessagingCore\Broking\Dto\ReceivedMessageInterface;
 
 interface CommandFromMessageFactoryInterface
 {
@@ -19,11 +19,11 @@ interface CommandFromMessageFactoryInterface
     public function registerCommandClass(string $eventType, string $commandClass): self;
 
     /**
-     * @param ReceivedMessage $receivedMessage
+     * @param ReceivedMessageInterface $receivedMessage
      * @return CommandInterface
      *
      * @throws NoCommandRegisteredForEventTypeException
      * @throws CommandClassDoesNotExistException
      */
-    public function createFromReceivedMessage(ReceivedMessage $receivedMessage): CommandInterface;
+    public function createFromReceivedMessage(ReceivedMessageInterface $receivedMessage): CommandInterface;
 }

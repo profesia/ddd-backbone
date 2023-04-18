@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Command\Factory;
 
-use Profesia\DddBackbone\Application\Command\CommandInterface;
+use Profesia\DddBackbone\Application\Command\AbstractCommandFromMessage;
+use Profesia\DddBackbone\Application\Command\Exception\CommandAlreadyRegisteredException;
+use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistException;
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
-use Profesia\MessagingCore\Broking\Dto\ReceivedMessage;
+use Profesia\DddBackbone\Application\Command\Exception\NotValidCommandClassException;
+use Profesia\MessagingCore\Broking\Dto\ReceivedMessageInterface;
 
-final class CommandMapFromMessagesFactory extends AbstractCommandFromMessageFromMessageFactory
+final class CommandMapFromMessagesFactory implements CommandFromMessageFactoryInterface
 {
+    const WILDCARD = '*';
+
     /** @var string[] */
     private array $eventCommandMap = [];
 
@@ -18,6 +23,11 @@ final class CommandMapFromMessagesFactory extends AbstractCommandFromMessageFrom
      */
     public function registerCommandClass(string $eventType, string $commandClass): self
     {
+        if (array_key_exists(self::WILDCARD, $this->eventCommandMap) === true) {
+            $registeredClass = $this->eventCommandMap[self::WILDCARD];
+            throw new CommandAlreadyRegisteredException("Wild card command class: [$registeredClass] already registered");
+        }
+
         self::validateCommandClass($commandClass);
         $this->eventCommandMap[$eventType] = $commandClass;
 
@@ -27,13 +37,42 @@ final class CommandMapFromMessagesFactory extends AbstractCommandFromMessageFrom
     /**
      * @inheritdoc
      */
-    public function createFromReceivedMessage(ReceivedMessage $receivedMessage): CommandInterface
+    public function createFromReceivedMessage(ReceivedMessageInterface $receivedMessage): AbstractCommandFromMessage
     {
-        $eventType = $receivedMessage->getEventType();
-        if (array_key_exists($eventType, $this->eventCommandMap) === false) {
+        $hasWildcard = array_key_exists(self::WILDCARD, $this->eventCommandMap);
+
+        if ($hasWildcard === true) {
+            return self::createCommand($this->eventCommandMap[self::WILDCARD], $receivedMessage);
+        }
+
+        $eventType           = $receivedMessage->getEventType();
+        $isCommandRegistered = array_key_exists($eventType, $this->eventCommandMap);
+        if ($isCommandRegistered === false) {
             throw new NoCommandRegisteredForEventTypeException("No command registered for the event type: [$eventType]");
         }
 
         return self::createCommand($this->eventCommandMap[$eventType], $receivedMessage);
+    }
+
+    /**
+     * @param string $className
+     * @throws NotValidCommandClassException
+     * @throws CommandClassDoesNotExistException
+     */
+    private static function validateCommandClass(string $className): void
+    {
+        if (class_exists($className) === false) {
+            throw new CommandClassDoesNotExistException("Command class: [$className] does not exist");
+        }
+
+        $abstractClass = AbstractCommandFromMessage::class;
+        if (is_subclass_of($className, $abstractClass) === false) {
+            throw new NotValidCommandClassException("Command class: [$className] does not extend an [$abstractClass]");
+        }
+    }
+
+    private static function createCommand(string $commandClass, ReceivedMessageInterface $message): AbstractCommandFromMessage
+    {
+        return new $commandClass($message);
     }
 }
