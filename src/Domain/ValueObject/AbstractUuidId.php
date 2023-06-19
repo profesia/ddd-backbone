@@ -16,6 +16,10 @@ abstract class AbstractUuidId
         $this->value = $value;
     }
 
+    /**
+     * @param string $value
+     * @return static
+     */
     public static function createFromString(string $value): self
     {
         if (preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $value) !== 1) {

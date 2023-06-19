@@ -16,6 +16,10 @@ abstract class AbstractIntId
         $this->value = $value;
     }
 
+    /**
+     * @param int $value
+     * @return static
+     */
     public static function createFromInt(int $value): self
     {
         if ($value <= 0) {
