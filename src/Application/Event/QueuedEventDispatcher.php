@@ -18,7 +18,7 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
     private string $correlationId;
 
     /** @var AbstractDomainEvent[] */
-    private array $events;
+    private array $events = [];
     private int $batchSize;
 
     public function __construct(
