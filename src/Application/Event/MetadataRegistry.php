@@ -44,7 +44,7 @@ class MetadataRegistry
             throw new BadMetadataKeyException("Class: [$eventName] is not a descendant of [$parentClass] class");
         }
 
-        $this->config[$eventName] = $metadata;
+        $this->config[call_user_func([$eventName, 'getEventName'])] = $metadata;
     }
 
     public function getEventMetadata(AbstractDomainEvent $event): EventMetadata

@@ -12,6 +12,7 @@ use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
 use Profesia\DddBackbone\Test\Assets\NullB2BEvent;
 use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
 use Profesia\DddBackbone\Test\Assets\NullEvent;
+use Profesia\DddBackbone\Test\Assets\NullEventWithOverriddenName;
 use Profesia\DddBackbone\Test\Assets\NullMessageBroker;
 use Profesia\DddBackbone\Test\Assets\NullUnregisteredEvent;
 
@@ -158,5 +159,28 @@ class MetadataRegistryTest extends TestCase
             }
             $this->assertEquals($globalProvider, $metadata->getProvider());
         }
+    }
+
+    public function testCanOverrideGetEventName(): void
+    {
+        $globalTarget   = 'globalTarget';
+        $globalProvider = 'globalProvider';
+        $events         = [
+            1 => new NullEventWithOverriddenName('1'),
+        ];
+        $registry       = MetadataRegistry::createFromArrayConfig(
+            [
+                get_class($events[1]) => [
+                    'resource' => 'resource1',
+                ],
+            ],
+            $globalProvider,
+            $globalTarget
+        );
+
+        $metadata = $registry->getEventMetadata($events[1]);
+        $this->assertEquals("resource1", $metadata->getResource());
+        $this->assertEquals($globalTarget, $metadata->getTarget());
+        $this->assertEquals($globalProvider, $metadata->getProvider());
     }
 }
