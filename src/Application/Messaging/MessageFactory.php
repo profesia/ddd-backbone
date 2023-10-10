@@ -32,6 +32,7 @@ class MessageFactory
             $event->getOccurredOn(),
             $correlationId,
             $metadata->getTarget(),
+            $event->getPublicName(),
             $event->getPayload()
         );
     }

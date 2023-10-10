@@ -16,4 +16,9 @@ class NullB2BEvent extends AbstractCompanyEvent
             'companyId' => $this->getCompanyId(),
         ];
     }
+
+    public function getPublicName(): string
+    {
+        return 'tests/NullB2BEvent';
+    }
 }

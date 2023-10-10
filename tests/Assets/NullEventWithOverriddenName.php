@@ -17,4 +17,9 @@ class NullEventWithOverriddenName extends AbstractDomainEvent
     {
         return 'Testing';
     }
+
+    public function getPublicName(): string
+    {
+        return 'tests/Testing';
+    }
 }

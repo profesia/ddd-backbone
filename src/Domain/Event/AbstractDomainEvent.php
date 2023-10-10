@@ -37,6 +37,8 @@ abstract class AbstractDomainEvent
 
     public abstract function getPayload(): array;
 
+    public abstract function getPublicName(): string;
+
     public static function getEventName(): string
     {
         return static::class;

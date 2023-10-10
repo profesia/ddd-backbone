@@ -91,6 +91,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 $dateTime,
                 $correlationId,
                 "target-{$i}",
+                "publicName-{$i}",
                 $event->getPayload()
             );
             $messageFactory
@@ -167,6 +168,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 new DateTimeImmutable(),
                 $correlationId,
                 'Target',
+                'PublicName',
                 $events[$i]->getPayload()
             );
 
@@ -257,6 +259,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 new DateTimeImmutable(),
                 $correlationId,
                 'Target',
+                'PublicName',
                 $events[$i]->getPayload()
             );
 
