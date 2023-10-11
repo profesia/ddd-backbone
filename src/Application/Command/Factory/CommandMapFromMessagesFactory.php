@@ -21,7 +21,7 @@ final class CommandMapFromMessagesFactory implements CommandFromMessageFactoryIn
     /**
      * @inheritdoc
      */
-    public function registerCommandClass(string $eventType, string $commandClass): self
+    public function registerCommandClass(string $subscribeName, string $commandClass): self
     {
         if (array_key_exists(self::WILDCARD, $this->eventCommandMap) === true) {
             $registeredClass = $this->eventCommandMap[self::WILDCARD];
@@ -29,7 +29,7 @@ final class CommandMapFromMessagesFactory implements CommandFromMessageFactoryIn
         }
 
         self::validateCommandClass($commandClass);
-        $this->eventCommandMap[$eventType] = $commandClass;
+        $this->eventCommandMap[$subscribeName] = $commandClass;
 
         return $this;
     }
@@ -45,13 +45,13 @@ final class CommandMapFromMessagesFactory implements CommandFromMessageFactoryIn
             return self::createCommand($this->eventCommandMap[self::WILDCARD], $receivedMessage);
         }
 
-        $eventType           = $receivedMessage->getEventType();
-        $isCommandRegistered = array_key_exists($eventType, $this->eventCommandMap);
+        $subscribeName           = $receivedMessage->getSubscribeName();
+        $isCommandRegistered = array_key_exists($subscribeName, $this->eventCommandMap);
         if ($isCommandRegistered === false) {
-            throw new NoCommandRegisteredForEventTypeException("No command registered for the event type: [$eventType]");
+            throw new NoCommandRegisteredForEventTypeException("No command registered for the subscribe name: [$subscribeName]");
         }
 
-        return self::createCommand($this->eventCommandMap[$eventType], $receivedMessage);
+        return self::createCommand($this->eventCommandMap[$subscribeName], $receivedMessage);
     }
 
     /**

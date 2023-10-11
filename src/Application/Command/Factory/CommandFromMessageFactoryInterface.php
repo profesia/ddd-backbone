@@ -12,11 +12,11 @@ use Profesia\MessagingCore\Broking\Dto\ReceivedMessageInterface;
 interface CommandFromMessageFactoryInterface
 {
     /**
-     * @param string $eventType
+     * @param string $subscribeName
      * @param string $commandClass
      * @return $this
      */
-    public function registerCommandClass(string $eventType, string $commandClass): self;
+    public function registerCommandClass(string $subscribeName, string $commandClass): self;
 
     /**
      * @param ReceivedMessageInterface $receivedMessage

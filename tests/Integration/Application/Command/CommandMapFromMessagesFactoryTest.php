@@ -78,19 +78,20 @@ class CommandMapFromMessagesFactoryTest extends TestCase
         $this->assertInstanceOf(NullCommand::class, $instance);
     }
 
-    public function testCanDetectNonExistingMapForEventType(): void
+    public function testCanDetectNonExistingMapForSubscribeName(): void
     {
         $factory = new CommandMapFromMessagesFactory();
 
-        $factory->registerCommandClass('eventType1', NullCommand::class);
-        $factory->registerCommandClass('eventType2', NullOtherCommand::class);
+        $factory->registerCommandClass('subscribeName1', NullCommand::class);
+        $factory->registerCommandClass('subscribeName2', NullOtherCommand::class);
 
 
-        $eventType = 'testEventType';
-        $this->expectExceptionObject(new NoCommandRegisteredForEventTypeException("No command registered for the event type: [$eventType]"));
+        $eventType     = 'testEventType';
+        $subscribeName = 'subscribeName';
+        $this->expectExceptionObject(new NoCommandRegisteredForEventTypeException("No command registered for the subscribe name: [$subscribeName]"));
         $data = base64_encode(json_encode(['test' => true]));
         $factory->createFromReceivedMessage(
-            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\"}, \"data\":\"$data\"}}")
+            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\", \"subscribeName\": \"$subscribeName\"}, \"data\":\"$data\"}}")
         );
     }
 
@@ -98,20 +99,22 @@ class CommandMapFromMessagesFactoryTest extends TestCase
     {
         $factory = new CommandMapFromMessagesFactory();
 
-        $factory->registerCommandClass('eventType1', NullCommand::class);
-        $factory->registerCommandClass('eventType2', NullOtherCommand::class);
+        $factory->registerCommandClass('subscribeName1', NullCommand::class);
+        $factory->registerCommandClass('subscribeName2', NullOtherCommand::class);
 
-        $eventType = 'eventType1';
-        $data = base64_encode(json_encode(['test' => true]));
-        $instance = $factory->createFromReceivedMessage(
-            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\"}, \"data\":\"$data\"}}")
+        $eventType     = 'eventType1';
+        $subscribeName = 'subscribeName1';
+        $data          = base64_encode(json_encode(['test' => true]));
+        $instance      = $factory->createFromReceivedMessage(
+            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\", \"subscribeName\": \"$subscribeName\"}, \"data\":\"$data\"}}")
         );
         $this->assertInstanceOf(NullCommand::class, $instance);
 
-        $eventType = 'eventType2';
-        $data = base64_encode(json_encode(['test' => true]));
-        $instance = $factory->createFromReceivedMessage(
-            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\"}, \"data\":\"$data\"}}")
+        $eventType     = 'eventType2';
+        $subscribeName = 'subscribeName2';
+        $data          = base64_encode(json_encode(['test' => true]));
+        $instance      = $factory->createFromReceivedMessage(
+            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\", \"subscribeName\": \"$subscribeName\"}, \"data\":\"$data\"}}")
         );
 
         $this->assertInstanceOf(NullOtherCommand::class, $instance);
