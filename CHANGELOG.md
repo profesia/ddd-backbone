@@ -1,5 +1,5 @@
 # Changelog
-## [v3.0.0](https://github.com/profesia/ddd-backbone/tree/v3.0.0) (2023-10-10)
+## [v3.0.0](https://github.com/profesia/ddd-backbone/tree/v3.0.0) (2023-10-11)
 
 [Full Changelog](https://github.com/profesia/ddd-backbone/compare/v2.1.3...v3.0.0)
 
