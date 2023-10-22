@@ -7,6 +7,7 @@ namespace Profesia\DddBackbone\Application\Messaging;
 use Profesia\DddBackbone\Application\Event\MetadataRegistry;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
 use Profesia\MessagingCore\Broking\Dto\Message;
+use Profesia\MessagingCore\Broking\Dto\MessageInterface;
 
 class MessageFactory
 {
@@ -18,7 +19,7 @@ class MessageFactory
         $this->metadataRegistry = $metadataRegistry;
     }
 
-    public function createFromDomainEvent(AbstractDomainEvent $event, string $correlationId): Message
+    public function createFromDomainEvent(AbstractDomainEvent $event, string $correlationId): MessageInterface
     {
         $metadata = $this->metadataRegistry->getEventMetadata(
             $event
