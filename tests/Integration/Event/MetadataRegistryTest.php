@@ -183,4 +183,53 @@ class MetadataRegistryTest extends TestCase
         $this->assertEquals($globalTarget, $metadata->getTarget());
         $this->assertEquals($globalProvider, $metadata->getProvider());
     }
+
+    public function testCanResolveIsPublicField(): void
+    {
+        $globalTarget   = 'globalTarget';
+        $globalProvider = 'globalProvider';
+        $event          = new NullB2CEvent(
+            '1',
+            '100'
+        );
+        $registry       = MetadataRegistry::createFromArrayConfig(
+            [
+                $event::getEventName() => [
+                    'resource' => 'resource',
+                    'isPublic' => true,
+                ],
+            ],
+            $globalProvider,
+            $globalTarget
+        );
+
+        $metadata = $registry->getEventMetadata($event);
+        $this->assertEquals('resource', $metadata->getResource());
+        $this->assertEquals($globalTarget, $metadata->getTarget());
+        $this->assertEquals($globalProvider, $metadata->getProvider());
+        $this->assertTrue($metadata->isPublic());
+
+        $globalTarget   = 'globalTarget';
+        $globalProvider = 'globalProvider';
+        $event          = new NullB2CEvent(
+            '1',
+            '100'
+        );
+        $registry       = MetadataRegistry::createFromArrayConfig(
+            [
+                $event::getEventName() => [
+                    'resource' => 'resource',
+                    'isPublic' => false,
+                ],
+            ],
+            $globalProvider,
+            $globalTarget
+        );
+
+        $metadata = $registry->getEventMetadata($event);
+        $this->assertEquals('resource', $metadata->getResource());
+        $this->assertEquals($globalTarget, $metadata->getTarget());
+        $this->assertEquals($globalProvider, $metadata->getProvider());
+        $this->assertFalse($metadata->isPublic());
+    }
 }

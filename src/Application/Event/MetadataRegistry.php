@@ -20,6 +20,7 @@ class MetadataRegistry
             $configToUse = [
                 'resource' => $eventConfig['resource'],
                 'provider' => $provider,
+                'isPublic' => array_key_exists('isPublic', $eventConfig) ? $eventConfig['isPublic']: true,
             ];
 
             $configToUse['target'] = $eventConfig['targetOverride'] ?? $target;

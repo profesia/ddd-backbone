@@ -15,7 +15,8 @@ class MessageFactory
 
     public function __construct(
         MetadataRegistry $metadataRegistry
-    ) {
+    )
+    {
         $this->metadataRegistry = $metadataRegistry;
     }
 
@@ -34,7 +35,8 @@ class MessageFactory
             $correlationId,
             $metadata->getTarget(),
             $event->getPublicName(),
-            $event->getPayload()
+            $event->getPayload(),
+            $metadata->isPublic(),
         );
     }
 }

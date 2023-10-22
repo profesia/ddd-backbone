@@ -20,6 +20,7 @@ class MessageFactoryTest extends TestCase
         $config         = [
             'resource' => 'resource',
             'provider' => 'provider',
+            'isPublic' => false
         ];
 
         $registry = MetadataRegistry::createFromArrayConfig(
@@ -41,5 +42,6 @@ class MessageFactoryTest extends TestCase
         $this->assertEquals($config['resource'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_RESOURCE]);
         $this->assertEquals($globalProvider, $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_PROVIDER]);
         $this->assertEquals($globalTarget, $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_TARGET]);
+        $this->assertFalse($message->isPublic());
     }
 }
