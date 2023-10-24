@@ -19,8 +19,8 @@ class MetadataRegistry
         foreach ($events as $eventName => $eventConfig) {
             $configToUse = [
                 'resource' => $eventConfig['resource'],
-                'provider' => $provider,
-                'isPublic' => array_key_exists('isPublic', $eventConfig) ? $eventConfig['isPublic']: true,
+                'provider' => $eventConfig['provider'] ?? $provider,
+                'topic' => $eventConfig['topic'] ?? null,
             ];
 
             $configToUse['target'] = $eventConfig['targetOverride'] ?? $target;

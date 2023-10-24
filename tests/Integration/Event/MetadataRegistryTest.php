@@ -196,7 +196,6 @@ class MetadataRegistryTest extends TestCase
             [
                 $event::getEventName() => [
                     'resource' => 'resource',
-                    'isPublic' => true,
                 ],
             ],
             $globalProvider,
@@ -207,7 +206,7 @@ class MetadataRegistryTest extends TestCase
         $this->assertEquals('resource', $metadata->getResource());
         $this->assertEquals($globalTarget, $metadata->getTarget());
         $this->assertEquals($globalProvider, $metadata->getProvider());
-        $this->assertTrue($metadata->isPublic());
+        $this->assertNull($metadata->getTopic());
 
         $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
@@ -219,7 +218,7 @@ class MetadataRegistryTest extends TestCase
             [
                 $event::getEventName() => [
                     'resource' => 'resource',
-                    'isPublic' => false,
+                    'topic'    => 'topic',
                 ],
             ],
             $globalProvider,
@@ -230,6 +229,6 @@ class MetadataRegistryTest extends TestCase
         $this->assertEquals('resource', $metadata->getResource());
         $this->assertEquals($globalTarget, $metadata->getTarget());
         $this->assertEquals($globalProvider, $metadata->getProvider());
-        $this->assertFalse($metadata->isPublic());
+        $this->assertEquals('topic', $metadata->getTopic());
     }
 }

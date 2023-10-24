@@ -36,7 +36,7 @@ class MessageFactory
             $metadata->getTarget(),
             $event->getPublicName(),
             $event->getPayload(),
-            $metadata->isPublic(),
+            $metadata->getTopic(),
         );
     }
 }

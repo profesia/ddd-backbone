@@ -12,31 +12,27 @@ use RuntimeException;
 
 final class QueuedSplittingEventDispatcher implements DequeueDispatcherInterface
 {
-    private MessageBrokerInterface $publicBroker;
-    private MessageBrokerInterface $privateBroker;
-    private MessageFactory         $messageFactory;
-    private string                 $channel;
-    private string                 $correlationId;
+    private MessageBrokerInterface $broker;
+    private MessageFactory $messageFactory;
+    private string $channel;
+    private string $correlationId;
 
     /** @var AbstractDomainEvent[] */
     private array $events = [];
-    private int   $batchSize;
+    private int $batchSize;
 
     public function __construct(
-        MessageBrokerInterface $publicBroker,
-        MessageBrokerInterface $privateBroker,
+        MessageBrokerInterface $broker,
         MessageFactory $messageFactory,
         string $channel,
         string $correlationId,
         int $batchSize = 500
-    )
-    {
+    ) {
         if ($batchSize <= 0 || $batchSize > 1000) {
             throw new RuntimeException('Batch size should be in the interval <1,1000>');
         }
 
-        $this->publicBroker   = $publicBroker;
-        $this->privateBroker  = $privateBroker;
+        $this->broker         = $broker;
         $this->messageFactory = $messageFactory;
         $this->channel        = $channel;
         $this->correlationId  = $correlationId;
@@ -50,59 +46,47 @@ final class QueuedSplittingEventDispatcher implements DequeueDispatcherInterface
 
     public function flush(): void
     {
-        $counter              = 1;
-        $publicMessagesBatch  = [];
-        $privateMessagesBatch = [];
+        $counterByTopic       = [];
+        $messagesBatchByTopic = [];
         foreach ($this->events as $event) {
             $message = $this->messageFactory->createFromDomainEvent(
                 $event,
                 $this->correlationId
             );
-            if ($message->isPublic() === true) {
-                $publicMessagesBatch[] = $message;
+
+            $topic = $message->getTopic() !== null ? $message->getTopic() : $this->channel;
+
+            array_key_exists($topic, $counterByTopic) ? $counterByTopic[$topic]++ : $counterByTopic[$topic] = 1;
+
+            if (array_key_exists($topic, $messagesBatchByTopic) === false) {
+                $messagesBatchByTopic[$topic] = [$message];
             } else {
-                $privateMessagesBatch[] = $message;
+                $messagesBatchByTopic[$topic][] = $message;
             }
 
-            if ($counter % $this->batchSize === 0) {
-                $counter = 0;
+            if ($counterByTopic[$topic] % $this->batchSize === 0) {
+                $counterByTopic[$topic] = 0;
 
-                $this->publicBroker->publish(
+                $this->broker->publish(
                     MessageCollection::createFromMessagesAndChannel(
-                        $this->channel,
-                        ...$publicMessagesBatch
-                    )
-                );
-                $this->privateBroker->publish(
-                    MessageCollection::createFromMessagesAndChannel(
-                        $this->channel,
-                        ...$privateMessagesBatch
+                        $topic,
+                        ...$messagesBatchByTopic[$topic]
                     )
                 );
 
-                $publicMessagesBatch  = [];
-                $privateMessagesBatch = [];
+                $messagesBatchByTopic[$topic] = [];
             }
-
-            $counter++;
         }
 
-        if ($publicMessagesBatch !== []) {
-            $this->publicBroker->publish(
-                MessageCollection::createFromMessagesAndChannel(
-                    $this->channel,
-                    ...$publicMessagesBatch
-                )
-            );
-        }
-
-        if ($privateMessagesBatch !== []) {
-            $this->privateBroker->publish(
-                MessageCollection::createFromMessagesAndChannel(
-                    $this->channel,
-                    ...$privateMessagesBatch
-                )
-            );
+        foreach (array_keys($messagesBatchByTopic) as $topic) {
+            if ($messagesBatchByTopic[$topic] !== []) {
+                $this->broker->publish(
+                    MessageCollection::createFromMessagesAndChannel(
+                        $topic,
+                        ...$messagesBatchByTopic[$topic]
+                    )
+                );
+            }
         }
     }
 }

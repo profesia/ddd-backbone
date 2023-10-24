@@ -22,14 +22,9 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
 {
     public function testCanAddEventsToQueue(): void
     {
-        /** @var MessageBrokerInterface|MockInterface $publicMessageBroker */
-        $publicMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-        $publicMessageBroker
-            ->shouldNotHaveBeenCalled();
-
-        /** @var MessageBrokerInterface|MockInterface $privateMessageBroker */
-        $privateMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-        $privateMessageBroker
+        /** @var MessageBrokerInterface|MockInterface $messageBroker */
+        $messageBroker = Mockery::mock(MessageBrokerInterface::class);
+        $messageBroker
             ->shouldNotHaveBeenCalled();
 
         /** @var MessageFactory|MockInterface $messageFactory */
@@ -40,8 +35,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
         $channel       = 'channel';
         $correlationId = 'correlation-id';
         $dispatcher    = new QueuedSplittingEventDispatcher(
-            $publicMessageBroker,
-            $privateMessageBroker,
+            $messageBroker,
             $messageFactory,
             $channel,
             $correlationId
@@ -59,13 +53,8 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
 
     public function testCanFlush(): void
     {
-        /** @var MessageBrokerInterface|MockInterface $publicMessageBroker */
-        $publicMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-
-        /** @var MessageBrokerInterface|MockInterface $privateMessageBroker */
-        $privateMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-        $privateMessageBroker
-            ->shouldNotHaveBeenCalled();
+        /** @var MessageBrokerInterface|MockInterface $messageBroker */
+        $messageBroker = Mockery::mock(MessageBrokerInterface::class);
 
         /** @var MessageFactory|MockInterface $messageFactory */
         $messageFactory = Mockery::mock(MessageFactory::class);
@@ -73,8 +62,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
         $channel       = 'channel';
         $correlationId = 'correlation-id';
         $dispatcher    = new QueuedSplittingEventDispatcher(
-            $publicMessageBroker,
-            $privateMessageBroker,
+            $messageBroker,
             $messageFactory,
             $channel,
             $correlationId
@@ -126,18 +114,18 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
             ...$messages
         );
 
-        $publicMessageBroker
+        $messageBroker
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($messages) {
+                static function (MessageCollection $collection) use ($messages, $channel): bool {
                     foreach ($collection as $key => $collectionMessage) {
                         if ($collectionMessage->toArray() !== $messages[$key]->toArray()) {
                             return false;
                         }
                     }
 
-                    return true;
+                    return $collection->getChannel() === $channel;
                 }
             )->andReturn(
                 $batchResponse
@@ -146,13 +134,10 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
         $dispatcher->flush();
     }
 
-    public function testCanSplitMessagesIntoSeparateBrokers(): void
+    public function testCanSplitMessagesIntoSeparateTopics(): void
     {
-        /** @var MessageBrokerInterface|MockInterface $publicMessageBroker */
-        $publicMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-
-        /** @var MessageBrokerInterface|MockInterface $privateMessageBroker */
-        $privateMessageBroker = Mockery::mock(MessageBrokerInterface::class);
+        /** @var MessageBrokerInterface|MockInterface $messageBroker */
+        $messageBroker = Mockery::mock(MessageBrokerInterface::class);
 
         /** @var MockInterface|MessageFactory $factory */
         $factory = Mockery::mock(MessageFactory::class);
@@ -160,8 +145,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
         $channel       = 'channel';
         $correlationId = Uuid::uuid4()->toString();
         $dispatcher    = new QueuedSplittingEventDispatcher(
-            $publicMessageBroker,
-            $privateMessageBroker,
+            $messageBroker,
             $factory,
             $channel,
             $correlationId,
@@ -188,7 +172,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
             'Target',
             'PublicName',
             $events[1]->getPayload(),
-            true
+            'topicName1'
         );
         $messages[2] = new Message(
             'Resource',
@@ -200,7 +184,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
             'Target',
             'PublicName',
             $events[2]->getPayload(),
-            false
+            'topicName2'
         );
 
         $factory
@@ -227,12 +211,12 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
                 $messages[2]
             );
 
-        $publicMessageBroker
+        $messageBroker
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($messages, $channel) {
-                    if ($channel !== $collection->getChannel()) {
+                static function (MessageCollection $collection) use ($messages, $channel): bool {
+                    if ('topicName1' !== $collection->getChannel()) {
                         return false;
                     }
 
@@ -246,12 +230,12 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
                 ),
             );
 
-        $privateMessageBroker
+        $messageBroker
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($messages, $channel) {
-                    if ($channel !== $collection->getChannel()) {
+                static function (MessageCollection $collection) use ($messages, $channel): bool {
+                    if ('topicName2' !== $collection->getChannel()) {
                         return false;
                     }
 
@@ -277,11 +261,8 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
 
     public function testCanSplitMessagesIntoBatches(): void
     {
-        /** @var MessageBrokerInterface|MockInterface $publicMessageBroker */
-        $publicMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-
-        /** @var MessageBrokerInterface|MockInterface $privateMessageBroker */
-        $privateMessageBroker = Mockery::mock(MessageBrokerInterface::class);
+        /** @var MessageBrokerInterface|MockInterface $messageBroker */
+        $messageBroker = Mockery::mock(MessageBrokerInterface::class);
 
         /** @var MockInterface|MessageFactory $factory */
         $factory = Mockery::mock(MessageFactory::class);
@@ -289,8 +270,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
         $channel       = 'channel';
         $correlationId = Uuid::uuid4()->toString();
         $dispatcher    = new QueuedSplittingEventDispatcher(
-            $publicMessageBroker,
-            $privateMessageBroker,
+            $messageBroker,
             $factory,
             $channel,
             $correlationId,
@@ -314,7 +294,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
                 'Target',
                 'PublicName',
                 $events[$i]->getPayload(),
-                ($i % 2 === 0)
+                ($i % 2 === 1 ? 'topicName1' : 'topicName2')
             );
 
             $dispatcher->dispatch(
@@ -334,78 +314,47 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
                 );
         }
 
-        $isPublicCallback  = function (Message $message) {
-            return $message->isPublic();
-        };
-        $isPrivateCallback = function (Message $message) {
-            return ($message->isPublic() === false);
-        };
-        $counter           = 0;
-        $publicMessageBroker
+        $isTopic1Callback = static fn(Message $message): bool => $message->getTopic() === 'topicName1';
+        $isTopic2Callback = static fn(Message $message): bool => $message->getTopic() === 'topicName2';
+        $counter1         = $counter2 = 0;
+        $messageBroker
             ->shouldReceive('publish')
-            ->times(3)
+            ->times(4)
             ->withArgs(
-                function (MessageCollection $collection) use ($channel, $messages, &$counter, $isPublicCallback): bool {
-                    if ($channel !== $collection->getChannel()) {
-                        return false;
+                static function (MessageCollection $collection) use ($channel, $messages, &$counter1, &$counter2, $isTopic1Callback, $isTopic2Callback): bool {
+                    if ($collection->getChannel() === 'topicName1') {
+                        $callback = $isTopic1Callback;
+                        $offset   = $counter1 * 20;
+                        $counter1++;
+                    } else {
+                        $callback = $isTopic2Callback;
+                        $offset   = $counter2 * 20;
+                        $counter2++;
                     }
 
-                    $offset = $counter * 20;
-                    $slice  = array_filter(array_slice($messages, $offset, 20), $isPublicCallback);
-                    $counter++;
-
-                    return (array_values(array_filter($collection->getMessages(), $isPublicCallback)) === array_values($slice));
+                    return array_values(array_filter($collection->getMessages(), $callback)) === array_values(array_slice(array_filter($messages, $callback), $offset, 20));
                 }
             )->andReturn(
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
                     true,
                     'status',
-                    ...array_filter(array_slice($messages, 0, 20), $isPublicCallback)
+                    ...array_slice(array_filter($messages, $isTopic1Callback), 0, 20)
                 ),
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
                     true,
                     'status',
-                    ...array_filter(array_slice($messages, 20, 20), $isPublicCallback)
+                    ...array_slice(array_filter($messages, $isTopic2Callback), 0, 20)
                 ),
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
                     true,
                     'status',
-                    ...array_filter(array_slice($messages, 40, 5), $isPublicCallback)
-                )
-            );
-
-        $secondCounter = 0;
-        $privateMessageBroker
-            ->shouldReceive('publish')
-            ->times(3)
-            ->withArgs(
-                function (MessageCollection $collection) use ($channel, $messages, &$secondCounter, $isPrivateCallback): bool {
-                    if ($channel !== $collection->getChannel()) {
-                        return false;
-                    }
-
-                    $offset = $secondCounter * 20;
-                    $slice  = array_filter(array_slice($messages, $offset, 20), $isPrivateCallback);
-                    $secondCounter++;
-
-                    return (array_values(array_filter($collection->getMessages(), $isPrivateCallback)) === array_values($slice));
-                }
-            )->andReturn(
-                BrokingBatchResponse::createForMessagesWithBatchStatus(
-                    true,
-                    'status',
-                    ...array_filter(array_slice($messages, 0, 20), $isPrivateCallback)
+                    ...array_slice(array_filter($messages, $isTopic1Callback), 20, 20)
                 ),
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
                     true,
                     'status',
-                    ...array_filter(array_slice($messages, 20, 20), $isPrivateCallback)
+                    ...array_slice(array_filter($messages, $isTopic2Callback), 20, 20)
                 ),
-                BrokingBatchResponse::createForMessagesWithBatchStatus(
-                    true,
-                    'status',
-                    ...array_filter(array_slice($messages, 40, 5), $isPrivateCallback)
-                )
             );
 
         $dispatcher->flush();
@@ -413,13 +362,8 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
 
     public function testCanSendFewerMessagesThanBatchSize(): void
     {
-        /** @var MessageBrokerInterface|MockInterface $publicMessageBroker */
-        $publicMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-
-        /** @var MessageBrokerInterface|MockInterface $privateMessageBroker */
-        $privateMessageBroker = Mockery::mock(MessageBrokerInterface::class);
-        $privateMessageBroker
-            ->shouldNotHaveBeenCalled();
+        /** @var MessageBrokerInterface|MockInterface $messageBroker */
+        $messageBroker = Mockery::mock(MessageBrokerInterface::class);
 
         /** @var MockInterface|MessageFactory $factory */
         $factory = Mockery::mock(MessageFactory::class);
@@ -427,8 +371,7 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
         $channel       = 'channel';
         $correlationId = Uuid::uuid4()->toString();
         $dispatcher    = new QueuedSplittingEventDispatcher(
-            $publicMessageBroker,
-            $privateMessageBroker,
+            $messageBroker,
             $factory,
             $channel,
             $correlationId,
@@ -471,17 +414,11 @@ class QueuedSplittingEventDispatcherTest extends MockeryTestCase
                 );
         }
 
-        $publicMessageBroker
+        $messageBroker
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($channel, $messages): bool {
-                    if ($channel !== $collection->getChannel()) {
-                        return false;
-                    }
-
-                    return (array_values($collection->getMessages()) === array_values($messages));
-                }
+                static fn(MessageCollection $collection): bool => array_values($collection->getMessages()) === array_values($messages)
             )->andReturn(
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
                     true,

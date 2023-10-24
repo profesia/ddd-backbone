@@ -44,7 +44,7 @@ class EventMetadataTest extends MockeryTestCase
                     'resource' => 'resource4',
                     'provider' => 'provider4',
                     'target'   => 'target4',
-                    'isPublic' => true,
+                    'topic'    => 'topic4',
                 ],
             ],
             [
@@ -52,7 +52,7 @@ class EventMetadataTest extends MockeryTestCase
                     'resource' => 'resource5',
                     'provider' => 'provider5',
                     'target'   => 'target5',
-                    'isPublic' => false,
+                    'topic'    => 'topic5',
                 ],
             ],
             [
@@ -86,12 +86,12 @@ class EventMetadataTest extends MockeryTestCase
             $this->assertEquals($config['target'], $metadata->getTarget());
             $this->assertEquals($config['provider'], $metadata->getProvider());
 
-            $isPublic = true;
-            if (array_key_exists('isPublic', $config) === true) {
-                $isPublic = $config['isPublic'];
+            $topic = null;
+            if (array_key_exists('topic', $config) === true) {
+                $topic = $config['topic'];
             }
 
-            $this->assertEquals($isPublic, $metadata->isPublic());
+            $this->assertEquals($topic, $metadata->getTopic());
         }
     }
 }

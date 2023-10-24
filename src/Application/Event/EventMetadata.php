@@ -11,14 +11,14 @@ final class EventMetadata
     private string $resource;
     private string $provider;
     private string $target;
-    private bool   $isPublic;
+    private ?string $topic;
 
-    private function __construct(string $resource, string $provider, string $target, bool $isPublic = true)
+    private function __construct(string $resource, string $provider, string $target, ?string $topic = null)
     {
         $this->resource = $resource;
         $this->provider = $provider;
         $this->target   = $target;
-        $this->isPublic = $isPublic;
+        $this->topic    = $topic;
     }
 
     public static function createFromArray(array $config): self
@@ -35,15 +35,11 @@ final class EventMetadata
             }
         }
 
-        if (array_key_exists('isPublic', $config) === false) {
-            $config['isPublic'] = true;
-        }
-
         return new self(
             $config['resource'],
             $config['provider'],
             $config['target'],
-            $config['isPublic']
+            $config['topic'] ?? null,
         );
     }
 
@@ -62,8 +58,8 @@ final class EventMetadata
         return $this->target;
     }
 
-    public function isPublic(): bool
+    public function getTopic(): ?string
     {
-        return $this->isPublic;
+        return $this->topic;
     }
 }
