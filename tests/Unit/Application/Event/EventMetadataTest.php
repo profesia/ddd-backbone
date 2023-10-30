@@ -41,9 +41,25 @@ class EventMetadataTest extends MockeryTestCase
             ],
             [
                 [
-                    'resource'    => 'resource4',
-                    'provider'    => 'provider4',
-                    'target'      => 'target4',
+                    'resource' => 'resource4',
+                    'provider' => 'provider4',
+                    'target'   => 'target4',
+                    'topic'    => 'topic4',
+                ],
+            ],
+            [
+                [
+                    'resource' => 'resource5',
+                    'provider' => 'provider5',
+                    'target'   => 'target5',
+                    'topic'    => 'topic5',
+                ],
+            ],
+            [
+                [
+                    'resource'    => 'resource6',
+                    'provider'    => 'provider6',
+                    'target'      => 'target6',
                     'keyToIgnore' => 'value',
                 ],
             ],
@@ -69,6 +85,13 @@ class EventMetadataTest extends MockeryTestCase
             $this->assertEquals($config['resource'], $metadata->getResource());
             $this->assertEquals($config['target'], $metadata->getTarget());
             $this->assertEquals($config['provider'], $metadata->getProvider());
+
+            $topic = null;
+            if (array_key_exists('topic', $config) === true) {
+                $topic = $config['topic'];
+            }
+
+            $this->assertEquals($topic, $metadata->getTopic());
         }
     }
 }

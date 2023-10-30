@@ -11,12 +11,14 @@ final class EventMetadata
     private string $resource;
     private string $provider;
     private string $target;
+    private ?string $topic;
 
-    private function __construct(string $resource, string $provider, string $target)
+    private function __construct(string $resource, string $provider, string $target, ?string $topic = null)
     {
         $this->resource = $resource;
         $this->provider = $provider;
         $this->target   = $target;
+        $this->topic    = $topic;
     }
 
     public static function createFromArray(array $config): self
@@ -36,7 +38,8 @@ final class EventMetadata
         return new self(
             $config['resource'],
             $config['provider'],
-            $config['target']
+            $config['target'],
+            $config['topic'] ?? null,
         );
     }
 
@@ -53,5 +56,10 @@ final class EventMetadata
     public function getTarget(): string
     {
         return $this->target;
+    }
+
+    public function getTopic(): ?string
+    {
+        return $this->topic;
     }
 }
