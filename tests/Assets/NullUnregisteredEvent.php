@@ -12,9 +12,4 @@ final class NullUnregisteredEvent extends AbstractDomainEvent
     {
         return [];
     }
-
-    public function getPublicName(): string
-    {
-        return 'tests/NullUnregisteredEvent';
-    }
 }

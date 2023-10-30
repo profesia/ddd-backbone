@@ -20,7 +20,6 @@ class MetadataRegistryTest extends TestCase
 {
     public function testCanRegisterEventMetadata(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
         $event          = new NullB2CEvent(
             '1',
@@ -29,22 +28,23 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 $event::getEventName() => [
-                    'resource' => 'resource',
+                    'resource'        => 'resource',
+                    'publishingTopic' => 'publishingTopic',
+                    'errorTopic'      => 'errorTopic',
                 ],
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
 
         $metadata = $registry->getEventMetadata($event);
         $this->assertEquals('resource', $metadata->getResource());
-        $this->assertEquals($globalTarget, $metadata->getTarget());
         $this->assertEquals($globalProvider, $metadata->getProvider());
+        $this->assertEquals("publishingTopic", $metadata->getPublishingTopic());
+        $this->assertEquals("errorTopic", $metadata->getErrorTopic());
     }
 
     public function testCanDetectNonExistingClassDuringRegistration(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
 
         $eventName = 'nonExistingClassName';
@@ -55,17 +55,17 @@ class MetadataRegistryTest extends TestCase
         MetadataRegistry::createFromArrayConfig(
             [
                 $eventName => [
-                    'resource' => 'resource',
+                    'resource'        => 'resource',
+                    'publishingTopic' => 'publishingTopic',
+                    'errorTopic'      => 'errorTopic',
                 ],
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
     }
 
     public function testCanDetectClassNotDescendingOfRequiredDomainClass(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
 
         $eventName   = NullMessageBroker::class;
@@ -77,17 +77,17 @@ class MetadataRegistryTest extends TestCase
         MetadataRegistry::createFromArrayConfig(
             [
                 $eventName => [
-                    'resource' => 'resource',
+                    'resource'        => 'resource',
+                    'publishingTopic' => 'publishingTopic',
+                    'errorTopic'      => 'errorTopic',
                 ],
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
     }
 
     public function testCanDetectUnRegisteredEventMetadata(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
         $events         = [
             1 => new NullB2CEvent('1', '100'),
@@ -97,24 +97,30 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 $events[1]::getEventName() => [
-                    'resource' => 'resource1',
+                    'resource'        => 'resource1',
+                    'publishingTopic' => 'publishingTopic1',
+                    'errorTopic'      => 'errorTopic1',
                 ],
                 $events[2]::getEventName() => [
-                    'resource' => 'resource2',
+                    'resource'        => 'resource2',
+                    'publishingTopic' => 'publishingTopic2',
+                    'errorTopic'      => 'errorTopic2',
                 ],
                 $events[3]::getEventName() => [
-                    'resource' => 'resource3',
+                    'resource'        => 'resource3',
+                    'publishingTopic' => 'publishingTopic3',
+                    'errorTopic'      => 'errorTopic3',
                 ],
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
 
         for ($i = 1; $i <= 3; $i++) {
             $metadata = $registry->getEventMetadata($events[$i]);
             $this->assertEquals("resource{$i}", $metadata->getResource());
-            $this->assertEquals($globalTarget, $metadata->getTarget());
             $this->assertEquals($globalProvider, $metadata->getProvider());
+            $this->assertEquals("publishingTopic{$i}", $metadata->getPublishingTopic());
+            $this->assertEquals("errorTopic{$i}", $metadata->getErrorTopic());
         }
 
         $this->expectExceptionObject(
@@ -125,7 +131,6 @@ class MetadataRegistryTest extends TestCase
 
     public function testCanOverrideGlobalTarget(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
         $events         = [
             1 => new NullB2CEvent('1', '100'),
@@ -135,35 +140,35 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 $events[1]::getEventName() => [
-                    'resource' => 'resource1',
+                    'resource'        => 'resource1',
+                    'publishingTopic' => 'publishingTopic1',
+                    'errorTopic'      => 'errorTopic1',
                 ],
                 $events[2]::getEventName() => [
-                    'resource'       => 'resource2',
-                    'targetOverride' => 'targetOverride',
+                    'resource'        => 'resource2',
+                    'publishingTopic' => 'publishingTopic2',
+                    'errorTopic'      => 'errorTopic2',
                 ],
                 $events[3]::getEventName() => [
-                    'resource' => 'resource3',
+                    'resource'        => 'resource3',
+                    'publishingTopic' => 'publishingTopic3',
+                    'errorTopic'      => 'errorTopic3',
                 ],
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
 
         for ($i = 1; $i <= 3; $i++) {
             $metadata = $registry->getEventMetadata($events[$i]);
             $this->assertEquals("resource{$i}", $metadata->getResource());
-            if ($i !== 2) {
-                $this->assertEquals($globalTarget, $metadata->getTarget());
-            } else {
-                $this->assertEquals('targetOverride', $metadata->getTarget());
-            }
             $this->assertEquals($globalProvider, $metadata->getProvider());
+            $this->assertEquals("publishingTopic{$i}", $metadata->getPublishingTopic());
+            $this->assertEquals("errorTopic{$i}", $metadata->getErrorTopic());
         }
     }
 
     public function testCanOverrideGetEventName(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
         $events         = [
             1 => new NullEventWithOverriddenName('1'),
@@ -171,64 +176,18 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 get_class($events[1]) => [
-                    'resource' => 'resource1',
+                    'resource'        => 'resource1',
+                    'publishingTopic' => 'publishingTopic1',
+                    'errorTopic'      => 'errorTopic1',
                 ],
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
 
         $metadata = $registry->getEventMetadata($events[1]);
         $this->assertEquals("resource1", $metadata->getResource());
-        $this->assertEquals($globalTarget, $metadata->getTarget());
         $this->assertEquals($globalProvider, $metadata->getProvider());
-    }
-
-    public function testCanResolveIsPublicField(): void
-    {
-        $globalTarget   = 'globalTarget';
-        $globalProvider = 'globalProvider';
-        $event          = new NullB2CEvent(
-            '1',
-            '100'
-        );
-        $registry       = MetadataRegistry::createFromArrayConfig(
-            [
-                $event::getEventName() => [
-                    'resource' => 'resource',
-                ],
-            ],
-            $globalProvider,
-            $globalTarget
-        );
-
-        $metadata = $registry->getEventMetadata($event);
-        $this->assertEquals('resource', $metadata->getResource());
-        $this->assertEquals($globalTarget, $metadata->getTarget());
-        $this->assertEquals($globalProvider, $metadata->getProvider());
-        $this->assertNull($metadata->getTopic());
-
-        $globalTarget   = 'globalTarget';
-        $globalProvider = 'globalProvider';
-        $event          = new NullB2CEvent(
-            '1',
-            '100'
-        );
-        $registry       = MetadataRegistry::createFromArrayConfig(
-            [
-                $event::getEventName() => [
-                    'resource' => 'resource',
-                    'topic'    => 'topic',
-                ],
-            ],
-            $globalProvider,
-            $globalTarget
-        );
-
-        $metadata = $registry->getEventMetadata($event);
-        $this->assertEquals('resource', $metadata->getResource());
-        $this->assertEquals($globalTarget, $metadata->getTarget());
-        $this->assertEquals($globalProvider, $metadata->getProvider());
-        $this->assertEquals('topic', $metadata->getTopic());
+        $this->assertEquals("publishingTopic1", $metadata->getPublishingTopic());
+        $this->assertEquals("errorTopic1", $metadata->getErrorTopic());
     }
 }

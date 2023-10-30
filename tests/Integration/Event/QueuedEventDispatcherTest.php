@@ -65,7 +65,6 @@ class QueuedEventDispatcherTest extends TestCase
                     'target'
                 )
             ),
-            'channel',
             'correlationId',
             $batchSize
         );

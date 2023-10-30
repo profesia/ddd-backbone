@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Event;
 
+use Profesia\MessagingCore\Broking\Dto\GroupedMessagesCollection;
 use RuntimeException;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
-use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
 
 final class QueuedEventDispatcher implements DequeueDispatcherInterface
@@ -24,7 +24,6 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
     public function __construct(
         MessageBrokerInterface $messageBroker,
         MessageFactory $messageFactory,
-        string $channel,
         string $correlationId,
         int $batchSize = 500
     ) {
@@ -34,7 +33,6 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
 
         $this->messageBroker  = $messageBroker;
         $this->messageFactory = $messageFactory;
-        $this->channel        = $channel;
         $this->correlationId  = $correlationId;
         $this->batchSize      = $batchSize;
     }
@@ -58,8 +56,7 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
                 $counter = 0;
 
                 $this->messageBroker->publish(
-                    MessageCollection::createFromMessagesAndChannel(
-                           $this->channel,
+                    GroupedMessagesCollection::createFromMessages(
                         ...$messagesBatch
                     )
                 );
@@ -72,8 +69,7 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
 
         if ($messagesBatch !== []) {
             $this->messageBroker->publish(
-                MessageCollection::createFromMessagesAndChannel(
-                       $this->channel,
+                GroupedMessagesCollection::createFromMessages(
                     ...$messagesBatch
                 )
             );

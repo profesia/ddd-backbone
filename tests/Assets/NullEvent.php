@@ -14,9 +14,4 @@ class NullEvent extends AbstractDomainEvent
             'test' => true
         ];
     }
-
-    public function getPublicName(): string
-    {
-        return 'tests/NullEvent';
-    }
 }

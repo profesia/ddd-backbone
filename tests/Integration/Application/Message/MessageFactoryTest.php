@@ -14,19 +14,19 @@ class MessageFactoryTest extends TestCase
 {
     public function testCanCreateMessageFromDomainEvent(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
         $event          = new NullEvent('8d0e43fd-d5d4-4b61-8963-e777c591cf0d');
         $config         = [
-            'resource' => 'resource',
+            'resource'        => 'resource',
+            'publishingTopic' => 'publishingTopic',
+            'errorTopic'      => 'errorTopic',
         ];
 
         $registry = MetadataRegistry::createFromArrayConfig(
             [
                 $event::getEventName() => $config,
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
 
         $factory = new MessageFactory(
@@ -39,28 +39,26 @@ class MessageFactoryTest extends TestCase
         $this->assertEquals('correlation-id', $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_CORRELATION_ID]);
         $this->assertEquals($config['resource'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_RESOURCE]);
         $this->assertEquals($globalProvider, $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_PROVIDER]);
-        $this->assertEquals($globalTarget, $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_TARGET]);
-        $this->assertNull($message->getTopic());
+        $this->assertEquals($config['publishingTopic'], $message->getPublishingTopic());
+        $this->assertEquals($config['errorTopic'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_ERROR_TOPIC]);
     }
 
     public function testCanCreateMessageFromDomainEventWithOverride(): void
     {
-        $globalTarget   = 'globalTarget';
         $globalProvider = 'globalProvider';
         $event          = new NullEvent('8d0e43fd-d5d4-4b61-8963-e777c591cf0d');
         $config         = [
-            'resource'       => 'resource',
-            'provider'       => 'provider',
-            'targetOverride' => 'localTarget',
-            'topic'          => 'localTopic',
+            'resource'        => 'resource',
+            'provider'        => 'provider',
+            'publishingTopic' => 'publishingTopic',
+            'errorTopic'      => 'errorTopic',
         ];
 
         $registry = MetadataRegistry::createFromArrayConfig(
             [
                 $event::getEventName() => $config,
             ],
-            $globalProvider,
-            $globalTarget
+            $globalProvider
         );
 
         $factory = new MessageFactory(
@@ -73,7 +71,7 @@ class MessageFactoryTest extends TestCase
         $this->assertEquals('correlation-id', $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_CORRELATION_ID]);
         $this->assertEquals($config['resource'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_RESOURCE]);
         $this->assertEquals($config['provider'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_PROVIDER]);
-        $this->assertEquals($config['targetOverride'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_TARGET]);
-        $this->assertEquals($config['topic'], $message->getTopic());
+        $this->assertEquals($config['publishingTopic'], $message->getPublishingTopic());
+        $this->assertEquals($config['errorTopic'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_ERROR_TOPIC]);
     }
 }

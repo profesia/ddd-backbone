@@ -14,8 +14,8 @@ use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
 use Profesia\DddBackbone\Test\Assets\NullEvent;
 use Profesia\MessagingCore\Broking\Dto\BrokingBatchResponse;
+use Profesia\MessagingCore\Broking\Dto\GroupedMessagesCollection;
 use Profesia\MessagingCore\Broking\Dto\Message;
-use Profesia\MessagingCore\Broking\Dto\MessageCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
 use Ramsey\Uuid\Uuid;
 
@@ -33,12 +33,10 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         $messageFactory
             ->shouldNotHaveBeenCalled();
 
-        $channel       = 'channel';
         $correlationId = 'correlation-id';
         $dispatcher    = new QueuedEventDispatcher(
             $messageBroker,
             $messageFactory,
-            $channel,
             $correlationId
         );
 
@@ -60,17 +58,15 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         /** @var MessageFactory|MockInterface $messageFactory */
         $messageFactory = Mockery::mock(MessageFactory::class);
 
-        $channel       = 'channel';
         $correlationId = 'correlation-id';
         $dispatcher    = new QueuedEventDispatcher(
             $messageBroker,
             $messageFactory,
-            $channel,
             $correlationId
         );
 
-        $objectIdBase       = 'object-id';
-        $messages           = [];
+        $objectIdBase = 'object-id';
+        $messages     = [];
         for ($i = 1; $i <= 5; $i++) {
             $dateTime = new DateTimeImmutable();
             $objectId = "{$objectIdBase}-{$i}";
@@ -90,8 +86,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 $objectId,
                 $dateTime,
                 $correlationId,
-                "target-{$i}",
                 "publicName-{$i}",
+                "publishingTopic-{$i}",
+                "errorTopic-{$i}",
                 $event->getPayload()
             );
             $messageFactory
@@ -106,7 +103,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                     $message
                 );
 
-            $messages[]           = $message;
+            $messages[] = $message;
         }
 
         $batchResponse = BrokingBatchResponse::createForMessagesWithBatchStatus(
@@ -115,14 +112,17 @@ class QueuedEventDispatcherTest extends MockeryTestCase
             ...$messages
         );
 
+        $counter = 0;
         $messageBroker
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($messages) {
-                    foreach ($collection as $key => $collectionMessage) {
-                        if ($collectionMessage->toArray() !== $messages[$key]->toArray()) {
-                            return false;
+                function (GroupedMessagesCollection $collection) use ($messages, &$counter) {
+                    foreach ($collection->getTopics() as $topic) {
+                        foreach ($collection->getMessagesForTopic($topic) as $collectionMessage) {
+                            if ($collectionMessage->toArray() !== $messages[$counter++]->toArray()) {
+                                return false;
+                            }
                         }
                     }
 
@@ -143,12 +143,10 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         /** @var MockInterface|MessageFactory $factory */
         $factory = Mockery::mock(MessageFactory::class);
 
-        $channel       = 'channel';
         $correlationId = Uuid::uuid4()->toString();
         $dispatcher    = new QueuedEventDispatcher(
             $messageBroker,
             $factory,
-            $channel,
             $correlationId,
             20
         );
@@ -167,8 +165,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 (string)$i,
                 new DateTimeImmutable(),
                 $correlationId,
-                'Target',
-                'PublicName',
+                "PublicName",
+                "PublishingTopic",
+                "ErrorTopic",
                 $events[$i]->getPayload()
             );
 
@@ -194,31 +193,27 @@ class QueuedEventDispatcherTest extends MockeryTestCase
             ->shouldReceive('publish')
             ->times(3)
             ->withArgs(
-                function (MessageCollection $collection) use ($channel, $messages, &$counter): bool {
-                    if ($channel !== $collection->getChannel()) {
-                        return false;
-                    }
-
+                function (GroupedMessagesCollection $collection) use ($messages, &$counter): bool {
                     $offset = $counter * 20;
                     $slice  = array_slice($messages, $offset, 20);
                     $counter++;
 
-                    return (array_values($collection->getMessages()) === array_values($slice));
+                    return (array_values($collection->getMessagesForTopic('PublishingTopic')) === array_values($slice));
                 }
             )->andReturn(
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
-                       true,
-                       'status',
+                    true,
+                    'status',
                     ...array_slice($messages, 0, 20)
                 ),
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
-                       true,
-                       'status',
+                    true,
+                    'status',
                     ...array_slice($messages, 20, 20)
                 ),
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
-                       true,
-                       'status',
+                    true,
+                    'status',
                     ...array_slice($messages, 40, 5)
                 )
             );
@@ -234,12 +229,10 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         /** @var MockInterface|MessageFactory $factory */
         $factory = Mockery::mock(MessageFactory::class);
 
-        $channel       = 'channel';
         $correlationId = Uuid::uuid4()->toString();
         $dispatcher    = new QueuedEventDispatcher(
             $messageBroker,
             $factory,
-            $channel,
             $correlationId,
             100
         );
@@ -258,8 +251,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 (string)$i,
                 new DateTimeImmutable(),
                 $correlationId,
-                'Target',
                 'PublicName',
+                'PublishingTopic',
+                'ErrorTopic',
                 $events[$i]->getPayload()
             );
 
@@ -284,17 +278,13 @@ class QueuedEventDispatcherTest extends MockeryTestCase
             ->shouldReceive('publish')
             ->once()
             ->withArgs(
-                function (MessageCollection $collection) use ($channel, $messages): bool {
-                    if ($channel !== $collection->getChannel()) {
-                        return false;
-                    }
-
-                    return (array_values($collection->getMessages()) === array_values($messages));
+                function (GroupedMessagesCollection $collection) use ($messages): bool {
+                    return (array_values($collection->getMessagesForTopic('PublishingTopic')) === array_values($messages));
                 }
             )->andReturn(
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
-                       true,
-                       'status',
+                    true,
+                    'status',
                     ...$messages
                 ),
             );

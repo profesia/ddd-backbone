@@ -17,9 +17,4 @@ class NullB2CEvent extends AbstractUserEvent
             'userId' => $this->getUserId(),
         ];
     }
-
-    public function getPublicName(): string
-    {
-        return 'tests/NullB2CEvent';
-    }
 }

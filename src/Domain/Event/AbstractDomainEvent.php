@@ -8,7 +8,7 @@ use DateTimeImmutable;
 
 abstract class AbstractDomainEvent
 {
-    private string $primaryId;
+    private string             $primaryId;
     private ?DateTimeImmutable $occurredOn = null;
 
 
@@ -37,7 +37,15 @@ abstract class AbstractDomainEvent
 
     public abstract function getPayload(): array;
 
-    public abstract function getPublicName(): string;
+    public function getPublicName(): string
+    {
+        $fullName = static::class;
+
+        return substr(
+            $fullName,
+            strrpos($fullName, '\\') + 1
+        );
+    }
 
     public static function getEventName(): string
     {

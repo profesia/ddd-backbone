@@ -30,44 +30,38 @@ class EventMetadataTest extends MockeryTestCase
                     'resource' => 'resource2',
                     'provider' => 'provider2',
                 ],
-                new BadEventMetadataConfigurationExceptionAbstract('Key: [target] is missing in the supplied config'),
+                new BadEventMetadataConfigurationExceptionAbstract('Key: [publishingTopic] is missing in the supplied config'),
             ],
             [
                 [
-                    'resource' => 'resource3',
-                    'provider' => 'provider3',
-                    'target'   => 'target3',
+                    'resource'        => 'resource3',
+                    'provider'        => 'provider3',
+                    'publishingTopic' => 'publishingTopic3',
+                ],
+                new BadEventMetadataConfigurationExceptionAbstract('Key: [errorTopic] is missing in the supplied config'),
+            ],
+            [
+                [
+                    'resource'        => 'resource5',
+                    'provider'        => 'provider5',
+                    'publishingTopic' => 'publishingTopic5',
+                    'errorTopic'      => 'errorTopic5'
                 ],
             ],
             [
                 [
-                    'resource' => 'resource4',
-                    'provider' => 'provider4',
-                    'target'   => 'target4',
-                    'topic'    => 'topic4',
-                ],
-            ],
-            [
-                [
-                    'resource' => 'resource5',
-                    'provider' => 'provider5',
-                    'target'   => 'target5',
-                    'topic'    => 'topic5',
-                ],
-            ],
-            [
-                [
-                    'resource'    => 'resource6',
-                    'provider'    => 'provider6',
-                    'target'      => 'target6',
-                    'keyToIgnore' => 'value',
+                    'resource'        => 'resource6',
+                    'provider'        => 'provider6',
+                    'publishingTopic' => 'publishingTopic6',
+                    'errorTopic'      => 'errorTopic6',
+                    'keyToIgnore'     => 'value',
                 ],
             ],
         ];
     }
 
     /**
-     * @param array                             $config
+     * @param array $config
      * @param AbstractApplicationException|null $exception
      *
      * @return void
@@ -83,15 +77,9 @@ class EventMetadataTest extends MockeryTestCase
         $metadata = EventMetadata::createFromArray($config);
         if ($hasException === false) {
             $this->assertEquals($config['resource'], $metadata->getResource());
-            $this->assertEquals($config['target'], $metadata->getTarget());
             $this->assertEquals($config['provider'], $metadata->getProvider());
-
-            $topic = null;
-            if (array_key_exists('topic', $config) === true) {
-                $topic = $config['topic'];
-            }
-
-            $this->assertEquals($topic, $metadata->getTopic());
+            $this->assertEquals($config['publishingTopic'], $metadata->getPublishingTopic());
+            $this->assertEquals($config['errorTopic'], $metadata->getErrorTopic());
         }
     }
 }

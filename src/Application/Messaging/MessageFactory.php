@@ -22,9 +22,8 @@ class MessageFactory
 
     public function createFromDomainEvent(AbstractDomainEvent $event, string $correlationId): MessageInterface
     {
-        $metadata = $this->metadataRegistry->getEventMetadata(
-            $event
-        );
+        $metadata      = $this->metadataRegistry->getEventMetadata($event);
+        $subscribeName = "{$metadata->getProvider()}.{$event->getPublicName()}";
 
         return new Message(
             $metadata->getResource(),
@@ -33,10 +32,10 @@ class MessageFactory
             $event->getPrimaryId(),
             $event->getOccurredOn(),
             $correlationId,
-            $metadata->getTarget(),
-            $event->getPublicName(),
+            $subscribeName,
+            $metadata->getPublishingTopic(),
+            $metadata->getErrorTopic(),
             $event->getPayload(),
-            $metadata->getTopic(),
         );
     }
 }
