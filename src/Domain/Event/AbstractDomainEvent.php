@@ -40,10 +40,16 @@ abstract class AbstractDomainEvent
     public function getPublicName(): string
     {
         $fullName = static::class;
+        $position = strrpos($fullName, '\\');
+        if ($position === false) {
+            $position = 0;
+        } else {
+            $position++;
+        }
 
         return substr(
             $fullName,
-            strrpos($fullName, '\\') + 1
+            $position
         );
     }
 
