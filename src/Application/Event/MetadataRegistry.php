@@ -18,10 +18,9 @@ class MetadataRegistry
         $instance = new self();
         foreach ($events as $eventName => $eventConfig) {
             $configToUse = [
-                'resource'        => $eventConfig['resource'],
-                'provider'        => $eventConfig['provider'] ?? $provider,
-                'publishingTopic' => $eventConfig['publishingTopic'],
-                'errorTopic'      => $eventConfig['errorTopic']
+                'resource' => $eventConfig['resource'],
+                'provider' => $eventConfig['provider'] ?? $provider,
+                'topic'    => $eventConfig['topic'],
             ];
 
             $instance->registerEventMetadata(

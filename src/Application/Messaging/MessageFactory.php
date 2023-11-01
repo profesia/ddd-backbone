@@ -33,8 +33,7 @@ class MessageFactory
             $event->getOccurredOn(),
             $correlationId,
             $subscribeName,
-            $metadata->getPublishingTopic(),
-            $metadata->getErrorTopic(),
+            $metadata->getTopic(),
             $event->getPayload(),
         );
     }

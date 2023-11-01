@@ -87,8 +87,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 $dateTime,
                 $correlationId,
                 "publicName-{$i}",
-                "publishingTopic-{$i}",
-                "errorTopic-{$i}",
+                "Topic-{$i}",
                 $event->getPayload()
             );
             $messageFactory
@@ -166,8 +165,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 new DateTimeImmutable(),
                 $correlationId,
                 "PublicName",
-                "PublishingTopic",
-                "ErrorTopic",
+                "Topic",
                 $events[$i]->getPayload()
             );
 
@@ -198,7 +196,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                     $slice  = array_slice($messages, $offset, 20);
                     $counter++;
 
-                    return (array_values($collection->getMessagesForTopic('PublishingTopic')) === array_values($slice));
+                    return (array_values($collection->getMessagesForTopic('Topic')) === array_values($slice));
                 }
             )->andReturn(
                 BrokingBatchResponse::createForMessagesWithBatchStatus(
@@ -252,8 +250,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 new DateTimeImmutable(),
                 $correlationId,
                 'PublicName',
-                'PublishingTopic',
-                'ErrorTopic',
+                'Topic',
                 $events[$i]->getPayload()
             );
 
@@ -279,7 +276,7 @@ class QueuedEventDispatcherTest extends MockeryTestCase
             ->once()
             ->withArgs(
                 function (GroupedMessagesCollection $collection) use ($messages): bool {
-                    return (array_values($collection->getMessagesForTopic('PublishingTopic')) === array_values($messages));
+                    return (array_values($collection->getMessagesForTopic('Topic')) === array_values($messages));
                 }
             )->andReturn(
                 BrokingBatchResponse::createForMessagesWithBatchStatus(

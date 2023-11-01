@@ -30,31 +30,21 @@ class EventMetadataTest extends MockeryTestCase
                     'resource' => 'resource2',
                     'provider' => 'provider2',
                 ],
-                new BadEventMetadataConfigurationExceptionAbstract('Key: [publishingTopic] is missing in the supplied config'),
+                new BadEventMetadataConfigurationExceptionAbstract('Key: [topic] is missing in the supplied config'),
             ],
             [
                 [
-                    'resource'        => 'resource3',
-                    'provider'        => 'provider3',
-                    'publishingTopic' => 'publishingTopic3',
-                ],
-                new BadEventMetadataConfigurationExceptionAbstract('Key: [errorTopic] is missing in the supplied config'),
-            ],
-            [
-                [
-                    'resource'        => 'resource5',
-                    'provider'        => 'provider5',
-                    'publishingTopic' => 'publishingTopic5',
-                    'errorTopic'      => 'errorTopic5'
+                    'resource' => 'resource3',
+                    'provider' => 'provider3',
+                    'topic'    => 'topic3',
                 ],
             ],
             [
                 [
-                    'resource'        => 'resource6',
-                    'provider'        => 'provider6',
-                    'publishingTopic' => 'publishingTopic6',
-                    'errorTopic'      => 'errorTopic6',
-                    'keyToIgnore'     => 'value',
+                    'resource'    => 'resource4',
+                    'provider'    => 'provider4',
+                    'topic'       => 'topic4',
+                    'keyToIgnore' => 'value',
                 ],
             ],
         ];
@@ -78,8 +68,7 @@ class EventMetadataTest extends MockeryTestCase
         if ($hasException === false) {
             $this->assertEquals($config['resource'], $metadata->getResource());
             $this->assertEquals($config['provider'], $metadata->getProvider());
-            $this->assertEquals($config['publishingTopic'], $metadata->getPublishingTopic());
-            $this->assertEquals($config['errorTopic'], $metadata->getErrorTopic());
+            $this->assertEquals($config['topic'], $metadata->getTopic());
         }
     }
 }

@@ -17,9 +17,8 @@ class MessageFactoryTest extends TestCase
         $globalProvider = 'globalProvider';
         $event          = new NullEvent('8d0e43fd-d5d4-4b61-8963-e777c591cf0d');
         $config         = [
-            'resource'        => 'resource',
-            'publishingTopic' => 'publishingTopic',
-            'errorTopic'      => 'errorTopic',
+            'resource' => 'resource',
+            'topic'    => 'topic',
         ];
 
         $registry = MetadataRegistry::createFromArrayConfig(
@@ -39,8 +38,7 @@ class MessageFactoryTest extends TestCase
         $this->assertEquals('correlation-id', $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_CORRELATION_ID]);
         $this->assertEquals($config['resource'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_RESOURCE]);
         $this->assertEquals($globalProvider, $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_PROVIDER]);
-        $this->assertEquals($config['publishingTopic'], $message->getPublishingTopic());
-        $this->assertEquals($config['errorTopic'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_ERROR_TOPIC]);
+        $this->assertEquals($config['topic'], $message->getTopic());
     }
 
     public function testCanCreateMessageFromDomainEventWithOverride(): void
@@ -48,10 +46,9 @@ class MessageFactoryTest extends TestCase
         $globalProvider = 'globalProvider';
         $event          = new NullEvent('8d0e43fd-d5d4-4b61-8963-e777c591cf0d');
         $config         = [
-            'resource'        => 'resource',
-            'provider'        => 'provider',
-            'publishingTopic' => 'publishingTopic',
-            'errorTopic'      => 'errorTopic',
+            'resource' => 'resource',
+            'provider' => 'provider',
+            'topic'    => 'topic',
         ];
 
         $registry = MetadataRegistry::createFromArrayConfig(
@@ -71,7 +68,6 @@ class MessageFactoryTest extends TestCase
         $this->assertEquals('correlation-id', $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_CORRELATION_ID]);
         $this->assertEquals($config['resource'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_RESOURCE]);
         $this->assertEquals($config['provider'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_PROVIDER]);
-        $this->assertEquals($config['publishingTopic'], $message->getPublishingTopic());
-        $this->assertEquals($config['errorTopic'], $messageData[Message::EVENT_ATTRIBUTES][Message::EVENT_ERROR_TOPIC]);
+        $this->assertEquals($config['topic'], $message->getTopic());
     }
 }

@@ -62,7 +62,6 @@ class QueuedEventDispatcherTest extends TestCase
                 MetadataRegistry::createFromArrayConfig(
                     [],
                     'provider',
-                    'target'
                 )
             ),
             'correlationId',

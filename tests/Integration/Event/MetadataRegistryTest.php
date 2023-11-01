@@ -28,9 +28,8 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 $event::getEventName() => [
-                    'resource'        => 'resource',
-                    'publishingTopic' => 'publishingTopic',
-                    'errorTopic'      => 'errorTopic',
+                    'resource' => 'resource',
+                    'topic'    => 'topic',
                 ],
             ],
             $globalProvider
@@ -39,8 +38,7 @@ class MetadataRegistryTest extends TestCase
         $metadata = $registry->getEventMetadata($event);
         $this->assertEquals('resource', $metadata->getResource());
         $this->assertEquals($globalProvider, $metadata->getProvider());
-        $this->assertEquals("publishingTopic", $metadata->getPublishingTopic());
-        $this->assertEquals("errorTopic", $metadata->getErrorTopic());
+        $this->assertEquals("topic", $metadata->getTopic());
     }
 
     public function testCanDetectNonExistingClassDuringRegistration(): void
@@ -55,9 +53,8 @@ class MetadataRegistryTest extends TestCase
         MetadataRegistry::createFromArrayConfig(
             [
                 $eventName => [
-                    'resource'        => 'resource',
-                    'publishingTopic' => 'publishingTopic',
-                    'errorTopic'      => 'errorTopic',
+                    'resource' => 'resource',
+                    'topic'    => 'topic',
                 ],
             ],
             $globalProvider
@@ -77,9 +74,8 @@ class MetadataRegistryTest extends TestCase
         MetadataRegistry::createFromArrayConfig(
             [
                 $eventName => [
-                    'resource'        => 'resource',
-                    'publishingTopic' => 'publishingTopic',
-                    'errorTopic'      => 'errorTopic',
+                    'resource' => 'resource',
+                    'topic'    => 'topic',
                 ],
             ],
             $globalProvider
@@ -97,19 +93,16 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 $events[1]::getEventName() => [
-                    'resource'        => 'resource1',
-                    'publishingTopic' => 'publishingTopic1',
-                    'errorTopic'      => 'errorTopic1',
+                    'resource' => 'resource1',
+                    'topic'    => 'topic1',
                 ],
                 $events[2]::getEventName() => [
-                    'resource'        => 'resource2',
-                    'publishingTopic' => 'publishingTopic2',
-                    'errorTopic'      => 'errorTopic2',
+                    'resource' => 'resource2',
+                    'topic'    => 'topic2',
                 ],
                 $events[3]::getEventName() => [
-                    'resource'        => 'resource3',
-                    'publishingTopic' => 'publishingTopic3',
-                    'errorTopic'      => 'errorTopic3',
+                    'resource' => 'resource3',
+                    'topic'    => 'topic3',
                 ],
             ],
             $globalProvider
@@ -119,8 +112,7 @@ class MetadataRegistryTest extends TestCase
             $metadata = $registry->getEventMetadata($events[$i]);
             $this->assertEquals("resource{$i}", $metadata->getResource());
             $this->assertEquals($globalProvider, $metadata->getProvider());
-            $this->assertEquals("publishingTopic{$i}", $metadata->getPublishingTopic());
-            $this->assertEquals("errorTopic{$i}", $metadata->getErrorTopic());
+            $this->assertEquals("topic{$i}", $metadata->getTopic());
         }
 
         $this->expectExceptionObject(
@@ -140,19 +132,16 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 $events[1]::getEventName() => [
-                    'resource'        => 'resource1',
-                    'publishingTopic' => 'publishingTopic1',
-                    'errorTopic'      => 'errorTopic1',
+                    'resource' => 'resource1',
+                    'topic'    => 'topic1',
                 ],
                 $events[2]::getEventName() => [
-                    'resource'        => 'resource2',
-                    'publishingTopic' => 'publishingTopic2',
-                    'errorTopic'      => 'errorTopic2',
+                    'resource' => 'resource2',
+                    'topic'    => 'topic2',
                 ],
                 $events[3]::getEventName() => [
-                    'resource'        => 'resource3',
-                    'publishingTopic' => 'publishingTopic3',
-                    'errorTopic'      => 'errorTopic3',
+                    'resource' => 'resource3',
+                    'topic'    => 'topic3',
                 ],
             ],
             $globalProvider
@@ -162,8 +151,7 @@ class MetadataRegistryTest extends TestCase
             $metadata = $registry->getEventMetadata($events[$i]);
             $this->assertEquals("resource{$i}", $metadata->getResource());
             $this->assertEquals($globalProvider, $metadata->getProvider());
-            $this->assertEquals("publishingTopic{$i}", $metadata->getPublishingTopic());
-            $this->assertEquals("errorTopic{$i}", $metadata->getErrorTopic());
+            $this->assertEquals("topic{$i}", $metadata->getTopic());
         }
     }
 
@@ -176,9 +164,8 @@ class MetadataRegistryTest extends TestCase
         $registry       = MetadataRegistry::createFromArrayConfig(
             [
                 get_class($events[1]) => [
-                    'resource'        => 'resource1',
-                    'publishingTopic' => 'publishingTopic1',
-                    'errorTopic'      => 'errorTopic1',
+                    'resource' => 'resource1',
+                    'topic'    => 'topic1',
                 ],
             ],
             $globalProvider
@@ -187,7 +174,6 @@ class MetadataRegistryTest extends TestCase
         $metadata = $registry->getEventMetadata($events[1]);
         $this->assertEquals("resource1", $metadata->getResource());
         $this->assertEquals($globalProvider, $metadata->getProvider());
-        $this->assertEquals("publishingTopic1", $metadata->getPublishingTopic());
-        $this->assertEquals("errorTopic1", $metadata->getErrorTopic());
+        $this->assertEquals("topic1", $metadata->getTopic());
     }
 }

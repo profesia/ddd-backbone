@@ -10,15 +10,13 @@ final class EventMetadata
 {
     private string $resource;
     private string $provider;
-    private string $publishingTopic;
-    private string $errorTopic;
+    private string $topic;
 
-    private function __construct(string $resource, string $provider, string $publishingTopic, string $errorTopic)
+    private function __construct(string $resource, string $provider, string $topic)
     {
-        $this->resource        = $resource;
-        $this->provider        = $provider;
-        $this->publishingTopic = $publishingTopic;
-        $this->errorTopic      = $errorTopic;
+        $this->resource = $resource;
+        $this->provider = $provider;
+        $this->topic    = $topic;
     }
 
     public static function createFromArray(array $config): self
@@ -26,8 +24,7 @@ final class EventMetadata
         $requiredKeys = [
             'resource',
             'provider',
-            'publishingTopic',
-            'errorTopic'
+            'topic',
         ];
 
         foreach ($requiredKeys as $keyToCheck) {
@@ -39,8 +36,7 @@ final class EventMetadata
         return new self(
             $config['resource'],
             $config['provider'],
-            $config['publishingTopic'],
-            $config['errorTopic']
+            $config['topic']
         );
     }
 
@@ -54,13 +50,8 @@ final class EventMetadata
         return $this->provider;
     }
 
-    public function getPublishingTopic(): string
+    public function getTopic(): string
     {
-        return $this->publishingTopic;
-    }
-
-    public function getErrorTopic(): string
-    {
-        return $this->errorTopic;
+        return $this->topic;
     }
 }
