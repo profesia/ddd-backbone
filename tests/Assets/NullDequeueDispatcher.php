@@ -13,8 +13,11 @@ class NullDequeueDispatcher implements DequeueDispatcherInterface
     {
     }
 
+    public function clear(): void
+    {
+    }
+
     public function dispatch(AbstractDomainEvent $event): void
     {
-
     }
 }

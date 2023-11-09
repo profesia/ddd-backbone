@@ -14,7 +14,6 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
 {
     private MessageBrokerInterface $messageBroker;
     private MessageFactory $messageFactory;
-    private string $channel;
     private string $correlationId;
 
     /** @var AbstractDomainEvent[] */
@@ -76,4 +75,8 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
         }
     }
 
+    public function clear(): void
+    {
+        $this->events = [];
+    }
 }

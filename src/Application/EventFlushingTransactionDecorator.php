@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application;
 
+use Throwable;
 use Profesia\DddBackbone\Application\Event\DequeueDispatcherInterface;
-use Profesia\DddBackbone\Domain\Exception\AbstractDomainException;
 
 final class EventFlushingTransactionDecorator implements TransactionServiceInterface
 {
     private TransactionServiceInterface $decoratedObject;
-    private DequeueDispatcherInterface $dequeueTrigger;
+    private DequeueDispatcherInterface  $dequeueTrigger;
 
     public function __construct(
         TransactionServiceInterface $decoratedObject,
         DequeueDispatcherInterface $dequeueTrigger
-    ) {
+    )
+    {
         $this->decoratedObject = $decoratedObject;
         $this->dequeueTrigger  = $dequeueTrigger;
     }
@@ -38,14 +39,21 @@ final class EventFlushingTransactionDecorator implements TransactionServiceInter
     /**
      * @param callable $func
      *
-     * @throws AbstractDomainException
+     * @throws Throwable
      */
     public function transactional(callable $func)
     {
-        $result = $this->decoratedObject->transactional($func);
-        $this->dequeueTrigger->flush();
+        try {
+            $result = $this->decoratedObject->transactional($func);
+            $this->dequeueTrigger->flush();
+            $this->dequeueTrigger->clear();
 
-        return $result;
+            return $result;
+        } catch (Throwable $e) {
+            $this->dequeueTrigger->clear();
+
+            throw $e;
+        }
     }
 
 }

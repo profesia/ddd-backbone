@@ -9,4 +9,6 @@ use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 interface DequeueDispatcherInterface extends DispatcherInterface
 {
     public function flush(): void;
+
+    public function clear(): void;
 }
