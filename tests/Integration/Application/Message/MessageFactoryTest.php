@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Profesia\DddBackbone\Application\Event\MetadataRegistry;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\Assets\NullEvent;
-use Profesia\MessagingCore\Broking\Dto\Message;
+use Profesia\MessagingCore\Broking\Dto\Sending\Message;
 
 class MessageFactoryTest extends TestCase
 {

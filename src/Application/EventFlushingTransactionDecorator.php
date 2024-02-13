@@ -39,6 +39,7 @@ final class EventFlushingTransactionDecorator implements TransactionServiceInter
     /**
      * @param callable $func
      *
+     * @return mixed
      * @throws Throwable
      */
     public function transactional(callable $func)

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Event;
 
-use Profesia\MessagingCore\Broking\Dto\GroupedMessagesCollection;
+use Profesia\MessagingCore\Broking\Dto\Sending\GroupedMessagesCollection;
 use RuntimeException;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;

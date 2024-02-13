@@ -7,7 +7,7 @@ namespace Profesia\DddBackbone\Application\Command\Factory;
 use Profesia\DddBackbone\Application\Command\CommandInterface;
 use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistException;
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
-use Profesia\MessagingCore\Broking\Dto\ReceivedMessageInterface;
+use Profesia\MessagingCore\Broking\Dto\Receiving\ReceivedMessageInterface;
 
 interface CommandFromMessageFactoryInterface
 {

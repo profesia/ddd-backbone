@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Profesia\DddBackbone\Domain\ValueObject;
+namespace Profesia\DddBackbone\Test\Assets;
 
 use Profesia\DddBackbone\Domain\Exception\InvalidArgumentException;
 
@@ -26,6 +26,9 @@ abstract class AbstractIntId
             throw new InvalidArgumentException("Value: [{$value}] is not a positive integer.");
         }
 
+        /**
+         * @phpstan-ignore-next-line
+         */
         return new static($value);
     }
 

@@ -13,9 +13,9 @@ use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
 use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
 use Profesia\DddBackbone\Test\Assets\NullEvent;
-use Profesia\MessagingCore\Broking\Dto\BrokingBatchResponse;
-use Profesia\MessagingCore\Broking\Dto\GroupedMessagesCollection;
-use Profesia\MessagingCore\Broking\Dto\Message;
+use Profesia\MessagingCore\Broking\Dto\Sending\BrokingBatchResponse;
+use Profesia\MessagingCore\Broking\Dto\Sending\GroupedMessagesCollection;
+use Profesia\MessagingCore\Broking\Dto\Sending\Message;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
 use Ramsey\Uuid\Uuid;
 

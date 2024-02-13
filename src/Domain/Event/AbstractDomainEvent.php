@@ -9,7 +9,7 @@ use DateTimeImmutable;
 abstract class AbstractDomainEvent
 {
     private string             $primaryId;
-    private ?DateTimeImmutable $occurredOn = null;
+    private DateTimeImmutable $occurredOn;
 
 
     public function __construct(
@@ -17,9 +17,10 @@ abstract class AbstractDomainEvent
         ?DateTimeImmutable $occurredOn = null
     )
     {
-        $this->occurredOn = $occurredOn;
-        if ($this->occurredOn === null) {
+        if ($occurredOn === null) {
             $this->occurredOn = new DateTimeImmutable();
+        } else {
+            $this->occurredOn = $occurredOn;
         }
 
         $this->primaryId = $primaryId;

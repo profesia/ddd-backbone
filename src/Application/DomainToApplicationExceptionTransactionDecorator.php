@@ -55,12 +55,16 @@ final class DomainToApplicationExceptionTransactionDecorator implements Transact
     /**
      * @param callable $func
      * @return mixed
+     * @throws AbstractApplicationException
      */
     public function transactional(callable $func)
     {
         try {
             return $this->decoratedObject->transactional($func);
         } catch (AbstractDomainException $e) {
+            /**
+             * @phpstan-ignore-next-line
+             * */
             throw new $this->exceptionClass(
                 $e->getMessage()
             );

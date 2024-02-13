@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Infrastructure\Psr;
 
+use Throwable;
 use Profesia\DddBackbone\Application\Log\Context;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
 use Profesia\DddBackbone\Domain\Exception\AbstractDomainException;
@@ -47,6 +48,7 @@ final class LoggingTransactionDecorator implements TransactionServiceInterface
      * @param callable $func
      *
      * @return mixed
+     * @throws Throwable
      */
     public function transactional(callable $func)
     {

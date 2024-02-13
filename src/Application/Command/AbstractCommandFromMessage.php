@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Command;
 
-use Profesia\MessagingCore\Broking\Dto\ReceivedMessageInterface;
+use Profesia\MessagingCore\Broking\Dto\Receiving\ReceivedMessageInterface;
 
 abstract class AbstractCommandFromMessage implements CommandInterface
 {

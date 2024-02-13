@@ -26,6 +26,9 @@ abstract class AbstractUuidId
             throw new InvalidArgumentException("Value: [{$value}] is not a valid string representation of an UUID");
         }
 
+        /**
+         * @phpstan-ignore-next-line
+         */
         return new static($value);
     }
 

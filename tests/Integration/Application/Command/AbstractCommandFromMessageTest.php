@@ -7,8 +7,8 @@ namespace Profesia\DddBackbone\Test\Integration\Application\Command;
 use PHPUnit\Framework\TestCase;
 use Profesia\DddBackbone\Application\Command\Factory\CommandMapFromMessagesFactory;
 use Profesia\DddBackbone\Test\Assets\NullCommand;
-use Profesia\MessagingCore\Broking\Dto\Message;
-use Profesia\MessagingCore\Broking\Dto\PubSubReceivedMessage;
+use Profesia\MessagingCore\Broking\Dto\Receiving\PubSubReceivedMessage;
+use Profesia\MessagingCore\Broking\Dto\Sending\Message;
 
 class AbstractCommandFromMessageTest extends TestCase
 {

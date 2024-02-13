@@ -14,7 +14,7 @@ use Profesia\DddBackbone\Application\Command\Factory\CommandMapFromMessagesFacto
 use Profesia\DddBackbone\Test\Assets\NullCommand;
 use Profesia\DddBackbone\Test\Assets\NullEvent;
 use Profesia\DddBackbone\Test\Assets\NullOtherCommand;
-use Profesia\MessagingCore\Broking\Dto\PubSubReceivedMessage;
+use Profesia\MessagingCore\Broking\Dto\Receiving\PubSubReceivedMessage;
 
 class CommandMapFromMessagesFactoryTest extends TestCase
 {
