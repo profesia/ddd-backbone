@@ -2,8 +2,10 @@
 ## Table of contents
 * [From 2.x to 3.x](#how-to-upgrade-from-2x-to-3x)
 * [From 1.x to 2.x](#how-to-upgrade-from-1x-to-2x)
+## How to upgrade from 3.x to 4.x
+4.0.0 is the new major version. The main purpose of this major release is to change the inner working of event dispatcher to be able to dispatch events based on their topic settings.
 ## How to upgrade from 2.x to 3.x
-3.0.0 is the new major version. The main purpose is to introduce `Public Name` for [AbstractDomainEvent](https://github.com/profesia/ddd-backbone/blob/v3.0.0/src/Domain/Event/AbstractDomainEvent.php)
+3.0.0 is the new major version. The main purpose is to introduce `Public Name` for [AbstractDomainEvent](https://github.com/profesia/ddd-backbone/blob/v3.0.0/src/Domain/Event/AbstractDomainEvent.php).
 ### BC Breaks
 * Introduced abstract method `getPublicName`, that requires an implementation in classes implementing this interface.
 ## How to upgrade from 1.x to 2.x
