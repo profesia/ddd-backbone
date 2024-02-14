@@ -15,6 +15,6 @@ composer require profesia/ddd-backbone
 ## Author
 Matej Bádal - matej.badal@profesia.sk
 
-Profesia spol. s r.o.
+Alma Career Slovakia s r.o.
 ## License
 This project is licensed under the MIT License
