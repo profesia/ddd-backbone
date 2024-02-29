@@ -9,7 +9,7 @@ use Profesia\DddBackbone\Domain\Event\DispatcherInterface;
 
 final class RegisteredEventFilteringDispatcher implements DispatcherInterface
 {
-    private MetadataRegistry    $registry;
+    private MetadataRegistry $registry;
     private DispatcherInterface $decoratedObject;
 
     public function __construct(MetadataRegistry $registry, DispatcherInterface $decoratedObject)

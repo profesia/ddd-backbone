@@ -6,13 +6,10 @@ namespace Profesia\DddBackbone\Application\Messaging;
 
 use Profesia\DddBackbone\Application\Event\MetadataRegistry;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
-use Profesia\MessagingCore\Broking\Dto\Sending\Message;
 use Profesia\MessagingCore\Broking\Dto\Sending\MessageInterface;
+use Profesia\MessagingCore\Broking\Dto\Sending\PubSubMessage;
 
-/**
- * @deprecated Use PubSubMessageFactory instead.
- */
-class MessageFactory implements MessageFactoryInterface
+class PubSubMessageFactory implements MessageFactoryInterface
 {
     private MetadataRegistry $metadataRegistry;
 
@@ -27,7 +24,7 @@ class MessageFactory implements MessageFactoryInterface
         $metadata      = $this->metadataRegistry->getEventMetadata($event);
         $subscribeName = "{$metadata->getProvider()}.{$event->getPublicName()}";
 
-        return new Message(
+        return new PubSubMessage(
             $metadata->getResource(),
             get_class($event),
             $metadata->getProvider(),

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Application\Event;
 
-use Profesia\MessagingCore\Broking\Dto\Sending\GroupedMessagesCollection;
-use RuntimeException;
-use Profesia\DddBackbone\Application\Messaging\MessageFactory;
+use Profesia\DddBackbone\Application\Messaging\MessageFactoryInterface;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
+use Profesia\MessagingCore\Broking\Dto\Sending\GroupedMessagesCollection;
 use Profesia\MessagingCore\Broking\MessageBrokerInterface;
+use RuntimeException;
 
 final class QueuedEventDispatcher implements DequeueDispatcherInterface
 {
     private MessageBrokerInterface $messageBroker;
-    private MessageFactory $messageFactory;
+    private MessageFactoryInterface $messageFactory;
     private string $correlationId;
 
     /** @var AbstractDomainEvent[] */
@@ -22,7 +22,7 @@ final class QueuedEventDispatcher implements DequeueDispatcherInterface
 
     public function __construct(
         MessageBrokerInterface $messageBroker,
-        MessageFactory $messageFactory,
+        MessageFactoryInterface $messageFactory,
         string $correlationId,
         int $batchSize = 500
     ) {

@@ -6,13 +6,10 @@ namespace Profesia\DddBackbone\Application\Messaging;
 
 use Profesia\DddBackbone\Application\Event\MetadataRegistry;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
-use Profesia\MessagingCore\Broking\Dto\Sending\Message;
+use Profesia\MessagingCore\Broking\Dto\Sending\AwsMessage;
 use Profesia\MessagingCore\Broking\Dto\Sending\MessageInterface;
 
-/**
- * @deprecated Use PubSubMessageFactory instead.
- */
-class MessageFactory implements MessageFactoryInterface
+class AwsMessageFactory implements MessageFactoryInterface
 {
     private MetadataRegistry $metadataRegistry;
 
@@ -27,16 +24,16 @@ class MessageFactory implements MessageFactoryInterface
         $metadata      = $this->metadataRegistry->getEventMetadata($event);
         $subscribeName = "{$metadata->getProvider()}.{$event->getPublicName()}";
 
-        return new Message(
-            $metadata->getResource(),
-            get_class($event),
+        return new AwsMessage(
+            $metadata->getTopic(),
             $metadata->getProvider(),
-            $event->getPrimaryId(),
+            get_class($event),
             $event->getOccurredOn(),
             $correlationId,
-            $subscribeName,
-            $metadata->getTopic(),
             $event->getPayload(),
+            $metadata->getResource(),
+            $event->getPrimaryId(),
+            $subscribeName,
         );
     }
 }
