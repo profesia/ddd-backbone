@@ -25,15 +25,15 @@ class AwsMessageFactory implements MessageFactoryInterface
         $subscribeName = "{$metadata->getProvider()}.{$event->getPublicName()}";
 
         return new AwsMessage(
-            $metadata->getTopic(),
-            $metadata->getProvider(),
+            $metadata->getResource(),
             get_class($event),
+            $metadata->getProvider(),
+            $event->getPrimaryId(),
             $event->getOccurredOn(),
             $correlationId,
-            $event->getPayload(),
-            $metadata->getResource(),
-            $event->getPrimaryId(),
             $subscribeName,
+            $metadata->getTopic(),
+            $event->getPayload(),
         );
     }
 }
