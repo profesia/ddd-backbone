@@ -10,7 +10,7 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
+    "php": "^8.1",
     "psr/log": "^1.0 || ^2.0 || ^3.0",
     "profesia/messaging-core": "4.0.0 || 4.1.0 || 4.2.0",
     "doctrine/orm": "^2.13"

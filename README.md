@@ -11,7 +11,7 @@ Install the latest version by running the command
 composer require profesia/ddd-backbone
 ```
 ## Requirements
-- PHP 7.4+
+- PHP 8.1+
 ## Author
 Matej Bádal - matej.badal@profesia.sk
 
