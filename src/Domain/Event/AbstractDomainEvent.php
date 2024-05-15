@@ -36,6 +36,9 @@ abstract class AbstractDomainEvent
         return $this->occurredOn;
     }
 
+    /**
+     * @return mixed[]
+     */
     public abstract function getPayload(): array;
 
     public function getPublicName(): string

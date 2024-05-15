@@ -13,6 +13,11 @@ class MetadataRegistry
     /** @var array<string, EventMetadata> */
     private array $config = [];
 
+    /**
+     * @param array<string, array<string, string>> $events
+     * @param string $provider
+     * @return self
+     */
     public static function createFromArrayConfig(array $events, string $provider): self
     {
         $instance = new self();

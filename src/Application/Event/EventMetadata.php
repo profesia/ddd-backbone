@@ -19,6 +19,10 @@ final class EventMetadata
         $this->topic    = $topic;
     }
 
+    /**
+     * @param array<string, string> $config
+     * @return self
+     */
     public static function createFromArray(array $config): self
     {
         $requiredKeys = [
