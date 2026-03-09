@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Profesia\DddBackbone\Infrastructure\Doctrine\Exception\RollbackFailedException;
 use Profesia\DddBackbone\Infrastructure\Doctrine\TransactionService;
 
 class TransactionServiceTest extends MockeryTestCase
@@ -141,7 +142,7 @@ class TransactionServiceTest extends MockeryTestCase
 
     public function testWillChainExceptionWhenRollbackAlsoFails(): void
     {
-        $commitException = new RuntimeException('Exception during commit');
+        $commitException   = new RuntimeException('Exception during commit');
         $rollbackException = new RuntimeException('Exception during rollback');
 
         /** @var MockInterface|EntityManagerInterface $entityManager */
@@ -172,6 +173,7 @@ class TransactionServiceTest extends MockeryTestCase
                 }
             );
         } catch (RuntimeException $e) {
+            $this->assertSame($rollbackException, $e);
             $this->assertSame($commitException, $e->getPrevious());
 
             throw $e;

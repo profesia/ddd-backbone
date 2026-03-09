@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Infrastructure\Doctrine;
 
-use RuntimeException;
 use Throwable;
 use Doctrine\ORM\EntityManagerInterface;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
+use Profesia\DddBackbone\Infrastructure\Doctrine\Exception\RollbackFailedException;
 
 class TransactionService implements TransactionServiceInterface
 {
@@ -52,11 +52,7 @@ class TransactionService implements TransactionServiceInterface
             try {
                 $this->rollback();
             } catch (Throwable $rollbackException) {
-                throw new RuntimeException(
-                    $rollbackException->getMessage(),
-                    (int) $rollbackException->getCode(),
-                    $e
-                );
+                throw RollbackFailedException::chain($rollbackException, $e);
             }
 
             throw $e;
