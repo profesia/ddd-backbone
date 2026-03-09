@@ -8,7 +8,6 @@ use Throwable;
 use Doctrine\ORM\EntityManagerInterface;
 use Profesia\DddBackbone\Application\Exception\TransactionServiceException;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
-use Profesia\DddBackbone\Infrastructure\Doctrine\Exception\RollbackFailedException;
 
 class TransactionService implements TransactionServiceInterface
 {
@@ -61,14 +60,5 @@ class TransactionService implements TransactionServiceInterface
         }
 
         return $result ?? true;
-    }
-
-    private function tryRollback(Throwable $triggeringException): void
-    {
-        try {
-            $this->rollback();
-        } catch (Throwable $rollbackException) {
-            throw RollbackFailedException::createFromThrowables($rollbackException, $triggeringException);
-        }
     }
 }

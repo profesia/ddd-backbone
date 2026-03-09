@@ -10,7 +10,6 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Profesia\DddBackbone\Application\Exception\TransactionServiceException;
-use Profesia\DddBackbone\Infrastructure\Doctrine\Exception\RollbackFailedException;
 use Profesia\DddBackbone\Infrastructure\Doctrine\TransactionService;
 
 class TransactionServiceTest extends MockeryTestCase
@@ -80,12 +79,20 @@ class TransactionServiceTest extends MockeryTestCase
 
         $exception = new RuntimeException('Testing exception');
 
-        $this->expectExceptionObject($exception);
-        $transactionService->transactional(
-            function () use ($exception) {
-                throw $exception;
-            }
-        );
+        $this->expectException(TransactionServiceException::class);
+        $this->expectExceptionMessage($exception->getMessage());
+
+        try {
+            $transactionService->transactional(
+                function () use ($exception) {
+                    throw $exception;
+                }
+            );
+        } catch (TransactionServiceException $e) {
+            $this->assertSame($exception, $e->getPrevious());
+
+            throw $e;
+        }
     }
 
     public function testCanCommitTransaction(): void
@@ -198,16 +205,18 @@ class TransactionServiceTest extends MockeryTestCase
             $entityManager
         );
 
-        $this->expectException(RollbackFailedException::class);
+        $this->expectException(TransactionServiceException::class);
         $this->expectExceptionMessage($rollbackException->getMessage());
 
         try {
             $transactionService->transactional(
                 function () {}
             );
-        } catch (RollbackFailedException $e) {
-            $this->assertSame($rollbackException, $e->getPrevious());
-            $this->assertSame($commitException, $e->getCommitException());
+        } catch (TransactionServiceException $e) {
+            $wrappedCommitException = $e->getPrevious();
+            $this->assertInstanceOf(TransactionServiceException::class, $wrappedCommitException);
+            $this->assertEquals($commitException->getMessage(), $wrappedCommitException->getMessage());
+            $this->assertSame($commitException, $wrappedCommitException->getPrevious());
 
             throw $e;
         }
