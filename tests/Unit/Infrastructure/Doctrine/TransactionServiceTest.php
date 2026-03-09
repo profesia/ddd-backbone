@@ -138,4 +138,43 @@ class TransactionServiceTest extends MockeryTestCase
 
         $this->assertEquals($expectedValue, $actualValue);
     }
+
+    public function testWillChainExceptionWhenRollbackAlsoFails(): void
+    {
+        $commitException = new RuntimeException('Exception during commit');
+        $rollbackException = new RuntimeException('Exception during rollback');
+
+        /** @var MockInterface|EntityManagerInterface $entityManager */
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('beginTransaction')
+            ->once();
+        $entityManager
+            ->shouldReceive('flush')
+            ->once()
+            ->andThrow($commitException);
+        $entityManager
+            ->shouldReceive('rollback')
+            ->once()
+            ->andThrow($rollbackException);
+
+        $transactionService = new TransactionService(
+            $entityManager
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($rollbackException->getMessage());
+
+        try {
+            $transactionService->transactional(
+                function () {
+                    return;
+                }
+            );
+        } catch (RuntimeException $e) {
+            $this->assertSame($commitException, $e->getPrevious());
+
+            throw $e;
+        }
+    }
 }
