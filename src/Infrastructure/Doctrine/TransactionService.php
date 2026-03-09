@@ -52,7 +52,7 @@ class TransactionService implements TransactionServiceInterface
             try {
                 $this->rollback();
             } catch (Throwable $rollbackException) {
-                throw RollbackFailedException::chain($rollbackException, $e);
+                throw RollbackFailedException::createFromThrowables($rollbackException, $e);
             }
 
             throw $e;

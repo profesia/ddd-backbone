@@ -163,7 +163,7 @@ class TransactionServiceTest extends MockeryTestCase
             $entityManager
         );
 
-        $this->expectException(RuntimeException::class);
+        $this->expectException(RollbackFailedException::class);
         $this->expectExceptionMessage($rollbackException->getMessage());
 
         try {
@@ -172,9 +172,9 @@ class TransactionServiceTest extends MockeryTestCase
                     return;
                 }
             );
-        } catch (RuntimeException $e) {
-            $this->assertSame($rollbackException, $e);
-            $this->assertSame($commitException, $e->getPrevious());
+        } catch (RollbackFailedException $e) {
+            $this->assertSame($rollbackException, $e->getPrevious());
+            $this->assertSame($commitException, $e->getCommitException());
 
             throw $e;
         }

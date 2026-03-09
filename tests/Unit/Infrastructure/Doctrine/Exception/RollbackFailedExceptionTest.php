@@ -20,20 +20,7 @@ class RollbackFailedExceptionTest extends TestCase
         $this->assertInstanceOf(RollbackFailedException::class, $exception);
         $this->assertEquals($rollbackException->getMessage(), $exception->getMessage());
         $this->assertEquals($rollbackException->getCode(), $exception->getCode());
-        $this->assertSame($commitException, $exception->getPrevious());
-    }
-
-    public function testChainPreservesOriginalExceptionClass(): void
-    {
-        $commitException   = new RuntimeException('Exception during commit');
-        $rollbackException = new RuntimeException('Exception during rollback', 5);
-
-        $chained = RollbackFailedException::chain($rollbackException, $commitException);
-
-        $this->assertSame($rollbackException, $chained);
-        $this->assertInstanceOf(RuntimeException::class, $chained);
-        $this->assertNotInstanceOf(RollbackFailedException::class, $chained);
-        $this->assertEquals($rollbackException->getMessage(), $chained->getMessage());
-        $this->assertSame($commitException, $chained->getPrevious());
+        $this->assertSame($rollbackException, $exception->getPrevious());
+        $this->assertSame($commitException, $exception->getCommitException());
     }
 }
