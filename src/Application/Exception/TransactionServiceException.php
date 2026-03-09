@@ -12,8 +12,17 @@ final class TransactionServiceException extends AbstractInfrastructureException
     {
         return new self(
             $exception->getMessage(),
-            (int) $exception->getCode(),
+            $exception->getCode(),
             $exception
+        );
+    }
+
+    public function wrap(Throwable $exception, TransactionServiceException $previous): self
+    {
+        return new self(
+            $exception->getMessage(),
+            $exception->getCode(),
+            $previous
         );
     }
 }

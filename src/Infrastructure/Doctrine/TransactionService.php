@@ -47,18 +47,17 @@ class TransactionService implements TransactionServiceInterface
 
         try {
             $result = call_user_func($func, $this);
-        } catch (Throwable $e) {
-            $this->tryRollback($e);
 
-            throw $e;
-        }
-
-        try {
             $this->commit();
         } catch (Throwable $e) {
-            $this->tryRollback($e);
+            $commitException = TransactionServiceException::createFromThrowable($e);
+            try {
+                $this->rollback();
+            } catch (Throwable $rollbackException) {
+                throw $commitException->wrap($rollbackException, $commitException);
+            }
 
-            throw TransactionServiceException::createFromThrowable($e);
+            throw $commitException;
         }
 
         return $result ?? true;
