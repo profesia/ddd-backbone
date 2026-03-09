@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Profesia\DddBackbone\Application\Exception\TransactionServiceException;
 use Profesia\DddBackbone\Infrastructure\Doctrine\Exception\RollbackFailedException;
 use Profesia\DddBackbone\Infrastructure\Doctrine\TransactionService;
 
@@ -106,9 +107,7 @@ class TransactionServiceTest extends MockeryTestCase
         );
 
         $transactionService->transactional(
-            function () {
-                return;
-            }
+            function () {}
         );
     }
 
@@ -140,6 +139,42 @@ class TransactionServiceTest extends MockeryTestCase
         $this->assertEquals($expectedValue, $actualValue);
     }
 
+    public function testWillWrapCommitExceptionInTransactionServiceException(): void
+    {
+        $commitException = new RuntimeException('Exception during commit', 5);
+
+        /** @var MockInterface|EntityManagerInterface $entityManager */
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('beginTransaction')
+            ->once();
+        $entityManager
+            ->shouldReceive('flush')
+            ->once()
+            ->andThrow($commitException);
+        $entityManager
+            ->shouldReceive('rollback')
+            ->once();
+
+        $transactionService = new TransactionService(
+            $entityManager
+        );
+
+        $this->expectException(TransactionServiceException::class);
+        $this->expectExceptionMessage($commitException->getMessage());
+
+        try {
+            $transactionService->transactional(
+                function () {}
+            );
+        } catch (TransactionServiceException $e) {
+            $this->assertSame($commitException, $e->getPrevious());
+            $this->assertEquals($commitException->getCode(), $e->getCode());
+
+            throw $e;
+        }
+    }
+
     public function testWillChainExceptionWhenRollbackAlsoFails(): void
     {
         $commitException   = new RuntimeException('Exception during commit');
@@ -168,9 +203,7 @@ class TransactionServiceTest extends MockeryTestCase
 
         try {
             $transactionService->transactional(
-                function () {
-                    return;
-                }
+                function () {}
             );
         } catch (RollbackFailedException $e) {
             $this->assertSame($rollbackException, $e->getPrevious());
