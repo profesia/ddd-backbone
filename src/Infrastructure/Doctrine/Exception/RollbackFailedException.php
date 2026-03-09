@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Profesia\DddBackbone\Infrastructure\Doctrine\Exception;
 
-use RuntimeException;
+use Profesia\DddBackbone\Application\Exception\TransactionServiceException;
 use Throwable;
 
-final class RollbackFailedException extends RuntimeException
+final class RollbackFailedException extends TransactionServiceException
 {
     private Throwable $commitException;
 
