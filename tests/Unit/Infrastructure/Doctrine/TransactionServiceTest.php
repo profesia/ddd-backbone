@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
+use Profesia\DddBackbone\Application\Exception\TransactionServiceException;
 use Profesia\DddBackbone\Infrastructure\Doctrine\TransactionService;
 
 class TransactionServiceTest extends MockeryTestCase
@@ -78,12 +79,20 @@ class TransactionServiceTest extends MockeryTestCase
 
         $exception = new RuntimeException('Testing exception');
 
-        $this->expectExceptionObject($exception);
-        $transactionService->transactional(
-            function () use ($exception) {
-                throw $exception;
-            }
-        );
+        $this->expectException(TransactionServiceException::class);
+        $this->expectExceptionMessage($exception->getMessage());
+
+        try {
+            $transactionService->transactional(
+                function () use ($exception) {
+                    throw $exception;
+                }
+            );
+        } catch (TransactionServiceException $e) {
+            $this->assertSame($exception, $e->getPrevious());
+
+            throw $e;
+        }
     }
 
     public function testCanCommitTransaction(): void
@@ -105,9 +114,7 @@ class TransactionServiceTest extends MockeryTestCase
         );
 
         $transactionService->transactional(
-            function () {
-                return;
-            }
+            function () {}
         );
     }
 
@@ -137,5 +144,81 @@ class TransactionServiceTest extends MockeryTestCase
         );
 
         $this->assertEquals($expectedValue, $actualValue);
+    }
+
+    public function testWillWrapCommitExceptionInTransactionServiceException(): void
+    {
+        $commitException = new RuntimeException('Exception during commit', 5);
+
+        /** @var MockInterface|EntityManagerInterface $entityManager */
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('beginTransaction')
+            ->once();
+        $entityManager
+            ->shouldReceive('flush')
+            ->once()
+            ->andThrow($commitException);
+        $entityManager
+            ->shouldReceive('rollback')
+            ->once();
+
+        $transactionService = new TransactionService(
+            $entityManager
+        );
+
+        $this->expectException(TransactionServiceException::class);
+        $this->expectExceptionMessage($commitException->getMessage());
+
+        try {
+            $transactionService->transactional(
+                function () {}
+            );
+        } catch (TransactionServiceException $e) {
+            $this->assertSame($commitException, $e->getPrevious());
+            $this->assertEquals($commitException->getCode(), $e->getCode());
+
+            throw $e;
+        }
+    }
+
+    public function testWillChainExceptionWhenRollbackAlsoFails(): void
+    {
+        $commitException   = new RuntimeException('Exception during commit');
+        $rollbackException = new RuntimeException('Exception during rollback');
+
+        /** @var MockInterface|EntityManagerInterface $entityManager */
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('beginTransaction')
+            ->once();
+        $entityManager
+            ->shouldReceive('flush')
+            ->once()
+            ->andThrow($commitException);
+        $entityManager
+            ->shouldReceive('rollback')
+            ->once()
+            ->andThrow($rollbackException);
+
+        $transactionService = new TransactionService(
+            $entityManager
+        );
+
+        $this->expectException(TransactionServiceException::class);
+        $this->expectExceptionMessage($rollbackException->getMessage());
+
+        try {
+            $transactionService->transactional(
+                function () {}
+            );
+        } catch (TransactionServiceException $e) {
+            $wrappedCommitException = $e->getPrevious();
+            $this->assertInstanceOf(TransactionServiceException::class, $wrappedCommitException);
+            $this->assertEquals($commitException->getMessage(), $wrappedCommitException->getMessage());
+            $this->assertSame($commitException, $wrappedCommitException->getPrevious());
+
+            throw $e;
+        }
     }
 }

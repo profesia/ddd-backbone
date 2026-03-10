@@ -6,6 +6,7 @@ namespace Profesia\DddBackbone\Infrastructure\Doctrine;
 
 use Throwable;
 use Doctrine\ORM\EntityManagerInterface;
+use Profesia\DddBackbone\Application\Exception\TransactionServiceException;
 use Profesia\DddBackbone\Application\TransactionServiceInterface;
 
 class TransactionService implements TransactionServiceInterface
@@ -48,9 +49,14 @@ class TransactionService implements TransactionServiceInterface
 
             $this->commit();
         } catch (Throwable $e) {
-            $this->rollback();
+            $commitException = TransactionServiceException::createFromThrowable($e);
+            try {
+                $this->rollback();
+            } catch (Throwable $rollbackException) {
+                throw $commitException->wrap($rollbackException, $commitException);
+            }
 
-            throw $e;
+            throw $commitException;
         }
 
         return $result ?? true;
