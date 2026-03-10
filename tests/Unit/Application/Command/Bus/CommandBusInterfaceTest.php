@@ -8,6 +8,9 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Profesia\DddBackbone\Application\Command\CommandInterface;
+use Profesia\DddBackbone\Test\Assets\DummyCommand;
+use Profesia\DddBackbone\Test\Assets\DummyCommandBus;
+use Profesia\DddBackbone\Test\Assets\NullCommand;
 use Profesia\DddBackbone\Test\Assets\NullCommandBus;
 
 class CommandBusInterfaceTest extends MockeryTestCase
@@ -23,14 +26,44 @@ class CommandBusInterfaceTest extends MockeryTestCase
         $bus->dispatch($command);
     }
 
-    public function testDispatchSyncReturnsMixedValue(): void
+    public function provideDataForSyncDispatch(): array
     {
-        /** @var MockInterface|CommandInterface $command */
-        $command = Mockery::mock(CommandInterface::class);
+        return [
+            'Assert null' => [
+                new DummyCommand(null), null
+            ],
+            'Assert true' => [
+                new DummyCommand(true), true
+            ],
+            'Assert false' => [
+                new DummyCommand(false), false
+            ],
+            'Assert int' =>[
+                new DummyCommand(1), 1
+            ],
+            'Assert double' =>[
+                new DummyCommand(1.0), 1.0
+            ],
+            'Assert string' => [
+                new DummyCommand('testing string'), 'testing string'
+            ],
+            'Assert array' => [
+                new DummyCommand(['test' => [1,2,3]]), ['test' => [1,2,3]]
+            ],
+        ];
+    }
 
-        $bus    = new NullCommandBus();
+    /**
+     * @param CommandInterface $command
+     * @param mixed $expectedValue
+     * @return void
+     * @dataProvider provideDataForSyncDispatch
+     */
+    public function testDispatchSyncReturnsMixedValue(CommandInterface $command, mixed $expectedValue): void
+    {
+        $bus    = new DummyCommandBus();
         $result = $bus->dispatchSync($command);
 
-        $this->assertNull($result);
+        $this->assertEquals($expectedValue, $result);
     }
 }
