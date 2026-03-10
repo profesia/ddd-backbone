@@ -15,4 +15,11 @@ interface CommandBusInterface
      * @throws AbstractApplicationException
      */
     public function dispatch(CommandInterface $command): void;
+
+    /**
+     * @param CommandInterface $command
+     * @return mixed
+     * @throws AbstractApplicationException
+     */
+    public function dispatchSync(CommandInterface $command): mixed;
 }
