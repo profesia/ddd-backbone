@@ -1,10 +1,16 @@
 # Upgrading guide
 ## Table of contents
+* [From 5.x to 6.x](#how-to-upgrade-from-5x-to-6x)
 * [From 4.x to 5.x](#how-to-upgrade-from-4x-to-5x)
 * [From 3.x to 4.x](#how-to-upgrade-from-3x-to-4x)
 * [From 2.x to 3.x](#how-to-upgrade-from-2x-to-3x)
 * [From 1.x to 2.x](#how-to-upgrade-from-1x-to-2x)
 
+## How to upgrade from 5.x to 6.x
+6.0.0 is the new major version. The main purpose is to improve exception handling in `TransactionService`.
+### BC Breaks
+* `TransactionService::transactional()` now wraps all thrown exceptions (from the callable and from commit) in `TransactionServiceException` before re-throwing. Code that previously caught the original exception type directly must now catch `TransactionServiceException` (or inspect `$exception->getPrevious()` to access the original exception).
+* Class `RollbackFailedException` (`Profesia\DddBackbone\Infrastructure\Doctrine\Exception\RollbackFailedException`) has been removed. Exception chaining for rollback failures is now handled via the `$previous` parameter of `TransactionServiceException`.
 ## How to upgrade from 4.x to 5.x
 5.0.0 is the new major version. The main purpose is the change contract according to the [messaging core](https://github.com/profesia/messaging-core) v4.
 ## How to upgrade from 3.x to 4.x
