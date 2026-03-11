@@ -154,7 +154,8 @@ class TransactionServiceTest extends MockeryTestCase
             ->once();
 
         $transactionService = new TransactionService(
-            $entityManager
+            $entityManager,
+            true
         );
 
         $actualValue = $transactionService->transactional(
@@ -164,5 +165,32 @@ class TransactionServiceTest extends MockeryTestCase
         );
 
         $this->assertNull($actualValue);
+    }
+
+    public function testReturnsTrueByDefaultWhenClosureReturnsNull(): void
+    {
+        /** @var MockInterface|EntityManagerInterface $entityManager */
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('beginTransaction')
+            ->once();
+        $entityManager
+            ->shouldReceive('flush')
+            ->once();
+        $entityManager
+            ->shouldReceive('commit')
+            ->once();
+
+        $transactionService = new TransactionService(
+            $entityManager
+        );
+
+        $actualValue = $transactionService->transactional(
+            function () {
+                return null;
+            }
+        );
+
+        $this->assertTrue($actualValue);
     }
 }
