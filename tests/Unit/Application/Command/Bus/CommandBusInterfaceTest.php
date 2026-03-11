@@ -38,17 +38,17 @@ class CommandBusInterfaceTest extends MockeryTestCase
             'Assert false' => [
                 new DummyCommand(false), false
             ],
-            'Assert int' =>[
+            'Assert int' => [
                 new DummyCommand(1), 1
             ],
-            'Assert double' =>[
+            'Assert double' => [
                 new DummyCommand(1.0), 1.0
             ],
             'Assert string' => [
                 new DummyCommand('testing string'), 'testing string'
             ],
             'Assert array' => [
-                new DummyCommand(['test' => [1,2,3]]), ['test' => [1,2,3]]
+                new DummyCommand(['test' => [1, 2, 3]]), ['test' => [1, 2, 3]]
             ],
         ];
     }
