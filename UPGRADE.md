@@ -1,9 +1,15 @@
 # Upgrading guide
 ## Table of contents
+* [From 5.x to 6.x](#how-to-upgrade-from-5x-to-6x)
 * [From 4.x to 5.x](#how-to-upgrade-from-4x-to-5x)
 * [From 3.x to 4.x](#how-to-upgrade-from-3x-to-4x)
 * [From 2.x to 3.x](#how-to-upgrade-from-2x-to-3x)
 * [From 1.x to 2.x](#how-to-upgrade-from-1x-to-2x)
+
+## How to upgrade from 5.x to 6.x
+6.0.0 is the new major version. The main purpose of this major release is to extend the [CommandBusInterface](https://github.com/profesia/ddd-backbone/blob/master/src/Application/Command/Bus/CommandBusInterface.php) with a synchronous dispatch method that can return a value.
+### BC Breaks
+* Method `dispatchSync` has been added to [CommandBusInterface](https://github.com/profesia/ddd-backbone/blob/master/src/Application/Command/Bus/CommandBusInterface.php). All classes implementing this interface must add a `dispatchSync(CommandInterface $command): mixed` method.
 
 ## How to upgrade from 4.x to 5.x
 5.0.0 is the new major version. The main purpose is the change contract according to the [messaging core](https://github.com/profesia/messaging-core) v4.
