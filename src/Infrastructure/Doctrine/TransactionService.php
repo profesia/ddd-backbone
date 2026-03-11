@@ -11,10 +11,12 @@ use Profesia\DddBackbone\Application\TransactionServiceInterface;
 class TransactionService implements TransactionServiceInterface
 {
     private EntityManagerInterface $entityManager;
+    private bool $allowNullResult;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, bool $allowNullResult = false)
     {
         $this->entityManager = $entityManager;
+        $this->allowNullResult = $allowNullResult;
     }
 
     public function start(): void
@@ -53,6 +55,6 @@ class TransactionService implements TransactionServiceInterface
             throw $e;
         }
 
-        return $result ?? true;
+        return $this->allowNullResult ? $result : ($result ?? true);
     }
 }
