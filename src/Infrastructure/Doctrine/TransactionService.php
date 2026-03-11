@@ -53,6 +53,6 @@ class TransactionService implements TransactionServiceInterface
             throw $e;
         }
 
-        return $result ?? true;
+        return $result;
     }
 }

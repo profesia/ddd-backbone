@@ -138,4 +138,31 @@ class TransactionServiceTest extends MockeryTestCase
 
         $this->assertEquals($expectedValue, $actualValue);
     }
+
+    public function testCanReturnNullFromTransaction(): void
+    {
+        /** @var MockInterface|EntityManagerInterface $entityManager */
+        $entityManager = Mockery::mock(EntityManagerInterface::class);
+        $entityManager
+            ->shouldReceive('beginTransaction')
+            ->once();
+        $entityManager
+            ->shouldReceive('flush')
+            ->once();
+        $entityManager
+            ->shouldReceive('commit')
+            ->once();
+
+        $transactionService = new TransactionService(
+            $entityManager
+        );
+
+        $actualValue = $transactionService->transactional(
+            function () {
+                return null;
+            }
+        );
+
+        $this->assertNull($actualValue);
+    }
 }
