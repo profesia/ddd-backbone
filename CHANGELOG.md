@@ -1,4 +1,28 @@
 # Changelog
+## [v5.5.0](https://github.com/profesia/ddd-backbone/tree/v5.5.0) (2026-03-11)
+
+[Full Changelog](https://github.com/profesia/ddd-backbone/compare/v5.4.0...v5.5.0)
+
+## [v5.4.0](https://github.com/profesia/ddd-backbone/tree/v5.4.0) (2024-05-15)
+
+[Full Changelog](https://github.com/profesia/ddd-backbone/compare/v5.3.0...v5.4.0)
+
+## [v5.3.0](https://github.com/profesia/ddd-backbone/tree/v5.3.0) (2024-03-13)
+
+[Full Changelog](https://github.com/profesia/ddd-backbone/compare/v5.2.0...v5.3.0)
+
+## [v5.2.0](https://github.com/profesia/ddd-backbone/tree/v5.2.0) (2024-03-12)
+
+[Full Changelog](https://github.com/profesia/ddd-backbone/compare/v5.1.0...v5.2.0)
+
+## [v5.1.0](https://github.com/profesia/ddd-backbone/tree/v5.1.0) (2024-03-12)
+
+[Full Changelog](https://github.com/profesia/ddd-backbone/compare/v5.0.0...v5.1.0)
+
+## [v5.0.0](https://github.com/profesia/ddd-backbone/tree/v5.0.0) (2024-02-14)
+
+[Full Changelog](https://github.com/profesia/ddd-backbone/compare/v4.0.0...v5.0.0)
+
 ## [v4.0.0](https://github.com/profesia/ddd-backbone/tree/v4.0.0) (2023-11-20)
 
 [Full Changelog](https://github.com/profesia/ddd-backbone/compare/v3.1.0...v4.0.0)
