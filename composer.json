@@ -9,10 +9,18 @@
       "email": "matej.badal@profesia.sk"
     }
   ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/profesia/messaging-core-contracts"
+    }
+  ],
   "require": {
-    "php": "^8.1",
+    "php": "^8.2",
     "psr/log": "^1.0 || ^2.0 || ^3.0",
-    "profesia/messaging-core": "^4.3.0",
+    "profesia/messaging-core-contracts": "dev-main",
     "doctrine/orm": "^2.13 || ^3.0"
   },
   "autoload": {
@@ -30,7 +38,8 @@
     "squizlabs/php_codesniffer": "^3.5",
     "phpstan/phpstan": "^1.0.0",
     "phpstan/phpstan-strict-rules": "^1.0.0",
-    "pestphp/pest": "^1.22"
+    "pestphp/pest": "^1.22",
+    "ramsey/uuid": "^4.2"
   },
   "archive": {
     "exclude": [

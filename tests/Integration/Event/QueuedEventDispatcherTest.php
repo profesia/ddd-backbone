@@ -6,10 +6,9 @@ namespace Profesia\DddBackbone\Test\Integration\Event;
 
 use RuntimeException;
 use PHPUnit\Framework\TestCase;
-use Profesia\DddBackbone\Application\Event\MetadataRegistry;
 use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
-use Profesia\DddBackbone\Application\Messaging\MessageFactory;
 use Profesia\DddBackbone\Test\Assets\NullMessageBroker;
+use Profesia\DddBackbone\Test\Assets\NullMessageFactory;
 
 class QueuedEventDispatcherTest extends TestCase
 {
@@ -58,12 +57,7 @@ class QueuedEventDispatcherTest extends TestCase
 
         $dispatcher = new QueuedEventDispatcher(
             new NullMessageBroker(),
-            new MessageFactory(
-                MetadataRegistry::createFromArrayConfig(
-                    [],
-                    'provider',
-                )
-            ),
+            new NullMessageFactory(),
             'correlationId',
             $batchSize
         );

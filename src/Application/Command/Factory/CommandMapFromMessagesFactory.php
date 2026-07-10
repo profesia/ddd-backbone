@@ -9,7 +9,7 @@ use Profesia\DddBackbone\Application\Command\Exception\CommandAlreadyRegisteredE
 use Profesia\DddBackbone\Application\Command\Exception\CommandClassDoesNotExistException;
 use Profesia\DddBackbone\Application\Command\Exception\NoCommandRegisteredForEventTypeException;
 use Profesia\DddBackbone\Application\Command\Exception\NotValidCommandClassException;
-use Profesia\MessagingCore\Broking\Dto\Receiving\ReceivedMessageInterface;
+use Profesia\MessagingCoreContracts\Broking\Dto\Receiving\ReceivedMessageInterface;
 
 final class CommandMapFromMessagesFactory implements CommandFromMessageFactoryInterface
 {

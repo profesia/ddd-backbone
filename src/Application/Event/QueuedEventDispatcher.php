@@ -6,8 +6,8 @@ namespace Profesia\DddBackbone\Application\Event;
 
 use Profesia\DddBackbone\Application\Messaging\MessageFactoryInterface;
 use Profesia\DddBackbone\Domain\Event\AbstractDomainEvent;
-use Profesia\MessagingCore\Broking\Dto\Sending\GroupedMessagesCollection;
-use Profesia\MessagingCore\Broking\MessageBrokerInterface;
+use Profesia\MessagingCoreContracts\Broking\Dto\Sending\GroupedMessagesCollection;
+use Profesia\MessagingCoreContracts\Broking\MessageBrokerInterface;
 use RuntimeException;
 
 final class QueuedEventDispatcher implements DequeueDispatcherInterface

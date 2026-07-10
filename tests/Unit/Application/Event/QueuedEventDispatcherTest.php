@@ -10,13 +10,13 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\MockInterface;
 use Profesia\DddBackbone\Application\Event\QueuedEventDispatcher;
-use Profesia\DddBackbone\Application\Messaging\MessageFactory;
+use Profesia\DddBackbone\Application\Messaging\MessageFactoryInterface;
 use Profesia\DddBackbone\Test\Assets\NullB2CEvent;
 use Profesia\DddBackbone\Test\Assets\NullEvent;
-use Profesia\MessagingCore\Broking\Dto\Sending\BrokingBatchResponse;
-use Profesia\MessagingCore\Broking\Dto\Sending\GroupedMessagesCollection;
-use Profesia\MessagingCore\Broking\Dto\Sending\Message;
-use Profesia\MessagingCore\Broking\MessageBrokerInterface;
+use Profesia\DddBackbone\Test\Assets\NullMessage;
+use Profesia\MessagingCoreContracts\Broking\Dto\Sending\BrokingBatchResponse;
+use Profesia\MessagingCoreContracts\Broking\Dto\Sending\GroupedMessagesCollection;
+use Profesia\MessagingCoreContracts\Broking\MessageBrokerInterface;
 use Ramsey\Uuid\Uuid;
 
 class QueuedEventDispatcherTest extends MockeryTestCase
@@ -28,8 +28,8 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         $messageBroker
             ->shouldNotHaveBeenCalled();
 
-        /** @var MessageFactory|MockInterface $messageFactory */
-        $messageFactory = Mockery::mock(MessageFactory::class);
+        /** @var MessageFactoryInterface|MockInterface $messageFactory */
+        $messageFactory = Mockery::mock(MessageFactoryInterface::class);
         $messageFactory
             ->shouldNotHaveBeenCalled();
 
@@ -55,8 +55,8 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         /** @var MessageBrokerInterface|MockInterface $messageBroker */
         $messageBroker = Mockery::mock(MessageBrokerInterface::class);
 
-        /** @var MessageFactory|MockInterface $messageFactory */
-        $messageFactory = Mockery::mock(MessageFactory::class);
+        /** @var MessageFactoryInterface|MockInterface $messageFactory */
+        $messageFactory = Mockery::mock(MessageFactoryInterface::class);
 
         $correlationId = 'correlation-id';
         $dispatcher    = new QueuedEventDispatcher(
@@ -79,15 +79,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 $event
             );
 
-            $message = new Message(
-                "resource-{$i}",
-                get_class($event),
-                "provider-{$i}",
-                $objectId,
-                $dateTime,
-                $correlationId,
-                "publicName-{$i}",
+            $message = new NullMessage(
                 "Topic-{$i}",
+                ['objectId' => $objectId],
                 $event->getPayload()
             );
             $messageFactory
@@ -139,8 +133,8 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         /** @var MockInterface|MessageBrokerInterface $messageBroker */
         $messageBroker = Mockery::mock(MessageBrokerInterface::class);
 
-        /** @var MockInterface|MessageFactory $factory */
-        $factory = Mockery::mock(MessageFactory::class);
+        /** @var MockInterface|MessageFactoryInterface $factory */
+        $factory = Mockery::mock(MessageFactoryInterface::class);
 
         $correlationId = Uuid::uuid4()->toString();
         $dispatcher    = new QueuedEventDispatcher(
@@ -157,15 +151,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 (string)$i,
                 (string)($i + 100)
             );
-            $messages[$i] = new Message(
-                'Resource',
-                'EventType',
-                'Provider',
-                (string)$i,
-                new DateTimeImmutable(),
-                $correlationId,
-                "PublicName",
-                "Topic",
+            $messages[$i] = new NullMessage(
+                'Topic',
+                ['objectId' => (string)$i],
                 $events[$i]->getPayload()
             );
 
@@ -224,8 +212,8 @@ class QueuedEventDispatcherTest extends MockeryTestCase
         /** @var MockInterface|MessageBrokerInterface $messageBroker */
         $messageBroker = Mockery::mock(MessageBrokerInterface::class);
 
-        /** @var MockInterface|MessageFactory $factory */
-        $factory = Mockery::mock(MessageFactory::class);
+        /** @var MockInterface|MessageFactoryInterface $factory */
+        $factory = Mockery::mock(MessageFactoryInterface::class);
 
         $correlationId = Uuid::uuid4()->toString();
         $dispatcher    = new QueuedEventDispatcher(
@@ -242,15 +230,9 @@ class QueuedEventDispatcherTest extends MockeryTestCase
                 (string)$i,
                 (string)($i + 100)
             );
-            $messages[$i] = new Message(
-                'Resource',
-                'EventType',
-                'Provider',
-                (string)$i,
-                new DateTimeImmutable(),
-                $correlationId,
-                'PublicName',
+            $messages[$i] = new NullMessage(
                 'Topic',
+                ['objectId' => (string)$i],
                 $events[$i]->getPayload()
             );
 

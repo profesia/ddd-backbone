@@ -14,7 +14,7 @@ use Profesia\DddBackbone\Application\Command\Factory\CommandMapFromMessagesFacto
 use Profesia\DddBackbone\Test\Assets\NullCommand;
 use Profesia\DddBackbone\Test\Assets\NullEvent;
 use Profesia\DddBackbone\Test\Assets\NullOtherCommand;
-use Profesia\MessagingCore\Broking\Dto\Receiving\PubSubReceivedMessage;
+use Profesia\DddBackbone\Test\Assets\NullReceivedMessage;
 
 class CommandMapFromMessagesFactoryTest extends TestCase
 {
@@ -70,9 +70,8 @@ class CommandMapFromMessagesFactoryTest extends TestCase
 
         $factory->registerCommandClass(CommandMapFromMessagesFactory::WILDCARD, NullCommand::class);
 
-        $data     = base64_encode(json_encode(['test' => true]));
         $instance = $factory->createFromReceivedMessage(
-            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"testEventType\"}, \"data\":\"$data\"}}")
+            new NullReceivedMessage('testEventType', 'subscribeName', ['test' => true])
         );
 
         $this->assertInstanceOf(NullCommand::class, $instance);
@@ -89,9 +88,8 @@ class CommandMapFromMessagesFactoryTest extends TestCase
         $eventType     = 'testEventType';
         $subscribeName = 'subscribeName';
         $this->expectExceptionObject(new NoCommandRegisteredForEventTypeException("No command registered for the subscribe name: [$subscribeName]"));
-        $data = base64_encode(json_encode(['test' => true]));
         $factory->createFromReceivedMessage(
-            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\", \"subscribeName\": \"$subscribeName\"}, \"data\":\"$data\"}}")
+            new NullReceivedMessage($eventType, $subscribeName, ['test' => true])
         );
     }
 
@@ -104,17 +102,15 @@ class CommandMapFromMessagesFactoryTest extends TestCase
 
         $eventType     = 'eventType1';
         $subscribeName = 'subscribeName1';
-        $data          = base64_encode(json_encode(['test' => true]));
         $instance      = $factory->createFromReceivedMessage(
-            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\", \"subscribeName\": \"$subscribeName\"}, \"data\":\"$data\"}}")
+            new NullReceivedMessage($eventType, $subscribeName, ['test' => true])
         );
         $this->assertInstanceOf(NullCommand::class, $instance);
 
         $eventType     = 'eventType2';
         $subscribeName = 'subscribeName2';
-        $data          = base64_encode(json_encode(['test' => true]));
         $instance      = $factory->createFromReceivedMessage(
-            PubSubReceivedMessage::createFromJsonString("{\"message\":{\"attributes\":{\"eventType\": \"$eventType\", \"subscribeName\": \"$subscribeName\"}, \"data\":\"$data\"}}")
+            new NullReceivedMessage($eventType, $subscribeName, ['test' => true])
         );
 
         $this->assertInstanceOf(NullOtherCommand::class, $instance);
